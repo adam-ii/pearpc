@@ -141,6 +141,10 @@ void pic_read(uint32 addr, uint32 &data, int size)
 
 void pic_raise_interrupt(int intr)
 {
+	if (!pearpc::cpu_thread_is_running(0)) {
+		return;
+	}
+	
 	sys_lock_mutex(PIC_mutex);
 	uint32 mask, pending;
 	int intr_;

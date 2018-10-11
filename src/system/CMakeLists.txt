@@ -3,6 +3,8 @@ set(target system)
 set(all_srcs
     display.cc
     display.h
+    renderer.cc
+    renderer.h
     fileofs.h
     sysexcept.cc
     sysexcept.h

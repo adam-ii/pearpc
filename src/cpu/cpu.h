@@ -22,6 +22,7 @@
 #define __CPU_H__
 
 #include "system/types.h"
+#include <functional>
 
 uint64	ppc_get_clock_frequency(int cpu);
 uint64	ppc_get_bus_frequency(int cpu);
@@ -49,5 +50,11 @@ void	ppc_cpu_set_msr(int cpu, uint32 newvalue);
 void	ppc_cpu_set_pc(int cpu, uint32 newvalue);
 uint32	ppc_cpu_get_pc(int cpu);
 uint32	ppc_cpu_get_pvr(int cpu);
+
+namespace pearpc {
+	void cpu_thread_start(int index, const std::function<void ()>& starting = nullptr, const std::function<void ()>& exited = nullptr);
+	void cpu_thread_wait(int index);
+	bool cpu_thread_is_running(int index);
+}
 
 #endif

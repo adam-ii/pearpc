@@ -23,6 +23,7 @@
 
 #include "clientconfig.h"
 #include <memory>
+#include <functional>
 
 namespace pearpc {
 	namespace main {
@@ -33,7 +34,10 @@ namespace pearpc {
 		std::shared_ptr<ClientConfig> loadConfig(const char *filename);
 		
 		/// Initialise host UI and client based on client configuration
-		void initClient(const std::shared_ptr<ClientConfig>& clientConfig);
+		void initClient(const std::shared_ptr<ClientConfig>& clientConfig, const std::function<void (const char*)>&);
+		
+		/// Shut down the client
+		void doneClient();
 		
 		/// Start client CPU
 		std::shared_ptr<ClientCPUState> startCPU(const std::shared_ptr<ClientConfig>& clientConfig);

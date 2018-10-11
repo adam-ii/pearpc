@@ -208,31 +208,6 @@ extern "C" int SDL_main(int argc, char *argv[])
 namespace pearpc {
 	namespace main {
 		
-		struct ClientCPUState
-		{
-			std::atomic_bool m_cpu_running;
-			std::thread m_thread;
-		};
-		
-		void cpu_thread(std::shared_ptr<ClientCPUState> state, std::shared_ptr<ClientConfig> config)
-		{
-			if (!prom_load_boot_file(config->getPromFile())) {
-				ht_printf("cannot find boot file.\n");
-			}
-			
-			config.reset();
-			
-			ppc_cpu_map_framebuffer(IO_GCARD_FRAMEBUFFER_PA_START, IO_GCARD_FRAMEBUFFER_EA);
-			ppc_cpu_run();
-			
-			state->m_cpu_running = false;
-		}
-		
-		std::thread start_cpu_thread(const std::shared_ptr<ClientCPUState> &state, const std::shared_ptr<ClientConfig> &config)
-		{
-			return std::thread(cpu_thread, state, config);
-		}
-		
 		std::shared_ptr<ClientConfig> loadConfig(const char *filename)
 		{
 			auto clientConfig = std::make_shared<ClientConfig>();
@@ -246,7 +221,7 @@ namespace pearpc {
 			return clientConfig;
 		}
 
-		void initClient(const std::shared_ptr<ClientConfig>& clientConfig)
+		void initClient(const std::shared_ptr<ClientConfig>& clientConfig, const std::function<void (const char*)>& funcInitUI)
 		{
 			gcard_init_modes();
 			gcard_add_characteristic(clientConfig->getDisplayConfig());
@@ -263,8 +238,10 @@ namespace pearpc {
 			}
 			
 			cuda_pre_init();
-			
-			initUI(APPNAME " " APPVERSION, *clientConfig);
+
+			if (funcInitUI != nullptr) {
+				funcInitUI(APPNAME " " APPVERSION);
+			}
 			
 			io_init();
 			
@@ -325,23 +302,30 @@ namespace pearpc {
 			gDisplay->print("now starting client...");
 			gDisplay->setAnsiColor(VCP(VC_WHITE, CONSOLE_BG));
 		}
+		
+		void doneClient()
+		{
+			io_done();
+			doneUI();
+		}
 
-		std::shared_ptr<ClientCPUState> startCPU(const std::shared_ptr<ClientConfig>& clientConfig)
+		void startCPU(const std::shared_ptr<ClientConfig>& clientConfig)
 		{
-			auto state = std::make_shared<ClientCPUState>();
-			state->m_cpu_running = true;
-			state->m_thread = start_cpu_thread(state, clientConfig);
-			return state;
+			cpu_thread_start(0, [clientConfig] {
+				if (!prom_load_boot_file(clientConfig->getPromFile())) {
+					ht_printf("cannot find boot file.\n");
+				}
+			});
 		}
 		
-		bool isCPURunning(const std::shared_ptr<ClientCPUState>& state)
+		bool isCPURunning()
 		{
-			return state->m_cpu_running;
+			return cpu_thread_is_running(0);
 		}
 		
-		void waitForCPU(const std::shared_ptr<ClientCPUState>& state)
+		void waitForCPU()
 		{
-			state->m_thread.join();
+			cpu_thread_wait(0);
 		}
 		
 	}
@@ -396,23 +380,24 @@ int main(int argc, char *argv[])
 			"along with this program; if not, write to the Free Software\n"
 			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA\n\n");
 
-		main::initClient(clientConfig);
+		main::initClient(clientConfig, [&clientConfig] (const char* title) {
+			initUI(title, *clientConfig);
+		});
 		
 		// begin cpu execution on a new thread
-		auto cpuThreadState = main::startCPU(clientConfig);
+		main::startCPU(clientConfig);
 
 		// this was your last chance to visit the config..
 		clientConfig.reset();
 
-		mainLoopUI([&cpuThreadState] () -> bool {
-			return !main::isCPURunning(cpuThreadState);
+		mainLoopUI([] () -> bool {
+			return !main::isCPURunning();
 		});
 
 		// wait for cpu thread to complete
-		main::waitForCPU(cpuThreadState);
-
-		io_done();
-
+		main::waitForCPU();
+		
+		main::doneClient();
 	} catch (const std::exception &e) {
 		ht_printf("main() caught exception: %s\n", e.what());
 		return 1;
@@ -423,7 +408,6 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	doneUI();
 	doneOSAPI();
 	doneData();
 	doneAtom();

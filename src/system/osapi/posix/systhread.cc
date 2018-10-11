@@ -56,8 +56,10 @@ int sys_create_thread(sys_thread *t, int flags, sys_thread_function start_routin
 
 void sys_destroy_mutex(sys_mutex m)
 {
-	pthread_mutex_destroy((pthread_mutex_t *)m);
-	free(m);
+	if (m) {
+		pthread_mutex_destroy((pthread_mutex_t *)m);
+		free(m);
+	}
 }
 
 void sys_destroy_semaphore(sys_semaphore s)

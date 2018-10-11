@@ -1,7 +1,7 @@
 set(CMAKE_CXX_STANDARD 11)
 
 set(PEARPC_UI "sdl" CACHE STRING "Select the user interface")
-set_property(CACHE PEARPC_UI PROPERTY STRINGS sdl x11 win32)
+set_property(CACHE PEARPC_UI PROPERTY STRINGS sdl x11 win32 macos)
 
 set(PEARPC_CPU "generic" CACHE STRING "Select the CPU emulation mode")
 set_property(CACHE PEARPC_CPU PROPERTY STRINGS generic x86 x86_64)
@@ -102,9 +102,37 @@ set(all_srcs
     clientconfig.h
 )
 
+get_target_property(macosx_resources system_ui MACOSX_RESOURCES)
+if (macosx_resources)
+    list(APPEND all_srcs ${macosx_resources})
+endif()
+
+get_target_property(metal_shaders system_ui METAL_SHADERS)
+if (metal_shaders)
+    list(APPEND all_srcs ${metal_shaders})
+endif()
+
 set(target ppc)
 
 add_executable(${target} ${all_srcs})
+
+if (${PEARPC_UI} STREQUAL "macos")
+    set_source_files_properties(${metal_shaders}
+        PROPERTIES
+            LANGUAGE METAL
+    )
+
+    get_target_property(macosx_info_plist system_ui MACOSX_INFO_PLIST)
+
+    set_target_properties(${target}
+        PROPERTIES
+            MACOSX_BUNDLE TRUE
+            MACOSX_BUNDLE_INFO_PLIST ${macosx_info_plist}
+            RESOURCE "${macosx_resources}"
+            XCODE_ATTRIBUTE_INFOPLIST_PREPROCESS YES
+            LINK_FLAGS -ObjC
+    )
+endif()
 
 target_link_libraries(${target}
     system_arch
@@ -125,6 +153,7 @@ target_link_libraries(${target}
     io_serial
     io
     cpu
+    cpu_common
     tools
     system_ui
     system

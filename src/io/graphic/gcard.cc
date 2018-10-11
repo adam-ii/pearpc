@@ -60,6 +60,10 @@ static VMode stdVModes[] = {
 	{.width = 1600, .height = 1024, .bytesPerPixel = 4},
 	{.width = 1600, .height = 1200, .bytesPerPixel = 2},
 	{.width = 1600, .height = 1200, .bytesPerPixel = 4},
+	{.width = 1920, .height = 1080, .bytesPerPixel = 2},
+	{.width = 1920, .height = 1080, .bytesPerPixel = 4},
+	{.width = 1920, .height = 1200, .bytesPerPixel = 2},
+	{.width = 1920, .height = 1200, .bytesPerPixel = 4},
 };
 
 static Container *gGraphicModes;
