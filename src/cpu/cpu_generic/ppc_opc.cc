@@ -29,6 +29,8 @@
 #include "ppc_opc.h"
 #include "ppc_dec.h"
 
+using namespace pearpc;
+
 
 void ppc_set_msr(uint32 newmsr)
 {

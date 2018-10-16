@@ -25,6 +25,8 @@
 #include "except.h"
 #include "snprintf.h"
 
+namespace pearpc {
+
 /*
  *	class Exception
  */
@@ -151,3 +153,4 @@ String &TypeCastException::reason(String &result) const
 	return result;
 }
 
+}

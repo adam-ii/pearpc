@@ -34,6 +34,8 @@
 #include "debug/tracers.h"
 #include "io/pci/pci.h"
 
+namespace pearpc {
+
 class PCI_GCard: public PCI_Device {
 public:
 			PCI_GCard();
@@ -135,6 +137,8 @@ bool displayCharacteristicsFromString(DisplayCharacteristics &aChar, const Strin
 void gcard_add_characteristic(const DisplayCharacteristics &aChar);
 bool gcard_supports_characteristic(const DisplayCharacteristics &aChar);
 bool gcard_finish_characteristic(DisplayCharacteristics &aChar);
+
+}
 
 #endif
 #endif

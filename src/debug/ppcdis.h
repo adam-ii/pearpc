@@ -25,6 +25,8 @@
 #include "asm.h"
 #include "ppcopc.h"
 
+namespace pearpc {
+
 struct ppcdis_operand {
 	int flags;
 	const powerpc_operand *op;
@@ -76,5 +78,7 @@ public:
 	virtual	const char	*strf(dis_insn *disasm_insn, int style, const char *format);
 	virtual	bool		validInsn(dis_insn *disasm_insn);
 };
+
+}
 
 #endif

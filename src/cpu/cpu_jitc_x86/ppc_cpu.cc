@@ -218,6 +218,8 @@ void ppc_set_singlestep_nonverbose(bool v)
 
 #include "configparser.h"
 
+using pearpc::gConfig;
+
 bool ppc_cpu_init()
 {
 	memset(&gCPU, 0, sizeof gCPU);

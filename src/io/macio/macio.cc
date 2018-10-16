@@ -92,6 +92,8 @@
 #define  MACIO_DBDMA_WAIT_IF_FALSE	2
 #define  MACIO_DBDMA_WAIT_ALWAYS	3
 
+namespace pearpc {
+
 struct MacIO_DBDMA_ChannelRegs {
         uint32 control;
         uint32 status;
@@ -212,4 +214,6 @@ void macio_done()
 
 void macio_init_config()
 {
+}
+
 }

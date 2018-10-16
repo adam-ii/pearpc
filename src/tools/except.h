@@ -26,6 +26,8 @@
 #include "tools/data.h"
 #include "tools/str.h"
 
+namespace pearpc {
+
 /**
  *	A exception.
  */
@@ -114,6 +116,8 @@ public:
 /* new */
 	virtual	String &reason(String &result) const;
 };
+
+}
 
 #endif /* __EXCEPT_H__ */
 

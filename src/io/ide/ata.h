@@ -28,6 +28,8 @@
 #define ATA_DEVICE_MODE_PLAIN 0 // just a 512 byte sector
 #define ATA_DEVICE_MODE_ECC   1 // add 4 byte ECC
 
+namespace pearpc {
+
 class ATADevice: public IDEDevice {
 public:
 	int mCyl;
@@ -56,5 +58,7 @@ public:
 	virtual bool	promSeek(uint64 pos);
 	virtual uint	promRead(byte *buf, uint size);
 };
+
+}
 
 #endif

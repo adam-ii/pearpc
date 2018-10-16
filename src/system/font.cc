@@ -22,6 +22,8 @@
 #include <cstring>
 #include "system/font.h"
 
+namespace pearpc {
+
 struct FFH {
 	byte magic[4];
 	byte height;
@@ -140,4 +142,6 @@ void Font::drawChar2(SystemDisplay *toDisplay, int x, int y, byte c, RGBA fgcolo
 void Font::drawFixedChar2(SystemDisplay *toDisplay, int x, int y, int dx, int dy, byte c, RGBA fgcolor, RGBA bgcolor)
 {
 	drawChar2(toDisplay, dx+x*mRealWidth, dy+y*mRealHeight, c, fgcolor, bgcolor);
+}
+
 }

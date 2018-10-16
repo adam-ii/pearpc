@@ -23,6 +23,8 @@
 
 #include "io/pci/pci.h"
 
+namespace pearpc {
+
 class PCI_MacIO: public PCI_Device {
 public:
 			PCI_MacIO();
@@ -33,6 +35,8 @@ public:
 void macio_init();
 void macio_done();
 void macio_init_config();
+
+}
 
 #endif
 

@@ -36,6 +36,8 @@
 #include "snprintf.h"
 #include "stream.h"
 
+namespace pearpc {
+
 int autoCompare(const Object *a, const Object *b)
 {
 #ifdef HAVE_HT_OBJECTS
@@ -1920,4 +1922,6 @@ bool initData()
  
 void doneData()
 {
+}
+
 }

@@ -39,6 +39,8 @@
 #define IO_MEM_ACCESS_EXC	1
 #define IO_MEM_ACCESS_FATAL	2
 
+namespace pearpc {
+
 static inline int io_mem_write(uint32 addr, uint32 data, int size)
 {
 	if (addr >= IO_GCARD_FRAMEBUFFER_PA_START && addr < IO_GCARD_FRAMEBUFFER_PA_END) {
@@ -201,5 +203,7 @@ static inline int io_mem_read128_native(uint32 addr, uint128 *data)
 void io_init();
 void io_done();
 void io_init_config();
+
+}
 
 #endif

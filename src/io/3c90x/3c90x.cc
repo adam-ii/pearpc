@@ -44,12 +44,16 @@
 #include "io/pci/pci.h"
 #include "debug/tracers.h"
 #include "3c90x.h"
+#include "configparser.h"
+#include "tools/strtools.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #define MAX_PACKET_SIZE		16384
+
+namespace pearpc {
 
 enum Command {
 	CmdTotalReset = 0<<11,
@@ -1882,8 +1886,6 @@ static void *_3c90xHandleRxQueue(void *nic)
 	return NULL;
 }
 
-#include "configparser.h"
-#include "tools/strtools.h"
 
 bool _3c90x_installed = false;
 
@@ -1954,4 +1956,6 @@ void _3c90x_init_config()
 {
 	gConfig->acceptConfigEntryIntDef(_3C90X_KEY_INSTALLED, 0);
 	gConfig->acceptConfigEntryString(_3C90X_KEY_MAC, false);
+}
+
 }

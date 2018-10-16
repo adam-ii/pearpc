@@ -25,6 +25,8 @@
 
 #define MAX_INSN_SIZE	16
 
+namespace pearpc {
+
 struct CPU_ADDR {
 	union {
 		struct {
@@ -141,5 +143,7 @@ public:
 #define ASM_SYNTAX_NUMBER "\\@n"
 #define ASM_SYNTAX_SYMBOL "\\@c"
 #define ASM_SYNTAX_STRING "\\@s"
+
+}
 
 #endif /* __ASM_H__ */

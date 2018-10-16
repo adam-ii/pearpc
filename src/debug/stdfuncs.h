@@ -23,6 +23,8 @@
 
 #include "debugger.h"
 
+namespace pearpc {
+
 #define FUNCTION_MAX_DECL_PARAMS	8
 
 typedef Function *(*FunctionCreator)();
@@ -35,5 +37,7 @@ struct FunctionDesc {
 };
 
 extern FunctionDesc gStdEvalFunctions[];
+
+}
 
 #endif /* __STDFUNCS_H__ */

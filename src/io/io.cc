@@ -29,6 +29,7 @@
 #include "io/cuda/cuda.h"
 #include "io/nvram/nvram.h"
 
+using namespace pearpc;
 
 /*
  *	The xx_glue functions are needed for the jitc
@@ -130,6 +131,8 @@ extern "C" void FASTCALL io_mem_write128_native_glue(uint32 addr, uint128 *data)
 	io_mem_write128_native(addr, data);
 }
  
+namespace pearpc {
+
 void io_init()
 {
 	pci_init();
@@ -152,4 +155,6 @@ void io_init_config()
 	cuda_init_config();
 	pic_init_config();
 	nvram_init_config();
+}
+
 }

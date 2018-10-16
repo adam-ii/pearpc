@@ -25,6 +25,8 @@
 
 #define	invalid_atom_id	0
 
+namespace pearpc {
+
 void *getAtomValue(uint id);
 uint getAtomId(void *value);
 bool registerAtom(uint id, void *data);
@@ -36,6 +38,8 @@ bool unregisterAtom(uint id);
 
 bool initAtom();
 void doneAtom();
+
+}
 
 #endif /* !__ATOM_H__ */
 

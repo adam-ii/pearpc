@@ -24,6 +24,8 @@
 #include "system/types.h"
 #include "tools/data.h"
 
+namespace pearpc {
+
 enum SystemEventType {
 	sysevNone	= 0,
 	sysevKey,
@@ -66,5 +68,7 @@ public:
 };
 
 typedef bool (*SystemEventHandler)(const SystemEvent &ev);
+
+}
 
 #endif /* __SYSTEM_EVENT_H__ */

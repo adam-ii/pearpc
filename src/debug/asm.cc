@@ -28,6 +28,8 @@
 #include "tools/debug.h"
 #include "tools/snprintf.h"
 
+namespace pearpc {
+
 /*
  *	CLASS disassembler
  */
@@ -135,4 +137,6 @@ void Disassembler::enable_highlighting()
 void Disassembler::disable_highlighting()
 {
 	highlight = false;
+}
+
 }

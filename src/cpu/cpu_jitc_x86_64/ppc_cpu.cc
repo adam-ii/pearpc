@@ -232,6 +232,9 @@ void ppc_set_singlestep_nonverbose(bool v)
 
 #include "configparser.h"
 
+using pearpc::ppc_malloc;
+using pearpc::gConfig;
+
 JITC *gJITC;
 bool ppc_cpu_init()
 {

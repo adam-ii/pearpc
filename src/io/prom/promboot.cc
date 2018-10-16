@@ -43,6 +43,10 @@
 #include "promdt.h"
 #include "prommem.h"
 
+extern uint32 gMemorySize;
+
+namespace pearpc {
+
 #define MSR_SF		(1<<31)
 #define MSR_UNKNOWN	(1<<30)
 #define MSR_UNKNOWN2	(1<<27)
@@ -477,8 +481,6 @@ bool promboot_copy_file_to_memory(File &f, uint32 &paddr, uint32 &vaddr, sint32 
 		}
 	}
 }
-
-extern uint32 gMemorySize;
 
 /* Based on those standards from:
  * PowerPC Microprocessor Common Hardware Reference Platform (CHRP)
@@ -1628,4 +1630,6 @@ bool prom_load_boot_file(const String &loadfile)
 		delete f;
 	}
 	return true;
+}
+
 }

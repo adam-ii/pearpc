@@ -25,6 +25,8 @@
 
 #include "system/display.h"
 
+namespace pearpc {
+
 void sys_convert_display(
 	const DisplayCharacteristics &aSrcChar,
 	const DisplayCharacteristics &aDestChar,
@@ -32,5 +34,7 @@ void sys_convert_display(
 	void *aDestBuf,
 	int firstLine,
 	int lastLine);
+
+}
 
 #endif

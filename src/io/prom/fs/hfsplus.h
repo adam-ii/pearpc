@@ -24,6 +24,8 @@
 #include "hfsplusglue.h"
 #include "part.h"
 
+namespace pearpc {
+
 #define HFSPlusSigWord		MAGIC16("H+")
 #define HFSXSigWord		MAGIC16("HX")
 
@@ -43,5 +45,7 @@ public:
 	/* new */
 	virtual	File *	openBootFile();
 };
+
+}
 
 #endif

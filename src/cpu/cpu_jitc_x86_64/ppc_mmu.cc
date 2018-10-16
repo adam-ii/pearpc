@@ -34,6 +34,8 @@
 
 #include "jitc_asm.h"
 
+using namespace pearpc;
+
 byte *gMemory = NULL;
 uint32 gMemorySize;
 

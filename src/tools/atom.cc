@@ -23,6 +23,8 @@
 
 #include <cstring>
 
+namespace pearpc {
+
 //static 
 AVLTree atoms(true);
 
@@ -91,3 +93,6 @@ bool initAtom()
 void doneAtom()
 {
 }
+
+}
+

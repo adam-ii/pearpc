@@ -21,6 +21,8 @@
 #include "tools/except.h"
 #include "debug/stdfuncs.h"
 
+namespace pearpc {
+
 #define declareIntOperator1(NAME, CODE...) \
 class NAME: public PFunction {\
 public:\
@@ -391,3 +393,5 @@ FunctionDesc gStdEvalFunctions[] =
 
 	{ NULL }
 };
+
+}

@@ -24,6 +24,8 @@
 #include "system/types.h"
 #define PROM_MAGIC_OPCODE 0x00345678
 
+namespace pearpc {
+
 extern uint32 gPromOSIEntry;
 
 struct prom_args {
@@ -35,5 +37,6 @@ struct prom_args {
 
 void call_prom_osi();
 
+}
 
 #endif

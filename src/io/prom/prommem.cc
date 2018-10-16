@@ -28,6 +28,10 @@
 #include "promosi.h"
 #include "prommem.h"
 
+extern uint32 gMemorySize; // GRRR
+
+namespace pearpc {
+
 /*char *prom_ea_string(uint32 ea)
 {
 	byte *r;
@@ -104,8 +108,6 @@ bool prom_claim_pages(uint32 phys, uint32 size)
 	}
 	return true;
 }
-
-extern uint32 gMemorySize; // GRRR
 
 uint32 prom_get_free_page()
 {
@@ -345,4 +347,6 @@ bool prom_mem_done()
 	delete[] gPhysMemoryUsed;
 	gPhysMemoryUsed = NULL;
 	return true;
+}
+
 }

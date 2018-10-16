@@ -26,6 +26,8 @@
 #define IO_CUDA_PA_START 0x80816000
 #define IO_CUDA_PA_END 0x80817E00
 
+namespace pearpc {
+
 void cuda_write(uint32 addr, uint32 data, int size);
 void cuda_read(uint32 addr, uint32 &data, int size);
 bool cuda_interrupt();
@@ -36,6 +38,8 @@ void cuda_done();
 void cuda_init_config();
 
 bool cuda_prom_get_key(uint32 &key);
+
+}
 
 #endif
 

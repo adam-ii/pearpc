@@ -25,6 +25,8 @@
 #include "tools/data.h"
 #include "tools/stream.h"
 
+namespace pearpc {
+
 // The maximum size of a CD sector
 #define IDE_MAX_BLOCK_SIZE 2352
 
@@ -66,5 +68,7 @@ public:
 	
 	virtual	int	toString(char *buf, int buflen) const;
 };
+
+}
 
 #endif

@@ -54,6 +54,8 @@
 #include "ppc_img.h"
 #include "ppc_button_changecd.h"
 
+using namespace pearpc;
+
 void changeCDFunc(void *p)
 {
 	int *i = (int *)p;

@@ -22,6 +22,8 @@
 #include "forth.h"
 #include "fcode.h"
 
+namespace pearpc {
+
 struct forth_word {
 	const char *name;
 	uint32 fcode;
@@ -509,4 +511,6 @@ void forth_disassemble(ForthVM &vm)
 		exit(1);
 		ok:;
 	}
+}
+
 }

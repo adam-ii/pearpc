@@ -29,6 +29,8 @@
 #include "io/pic/pic.h"
 #include "gcard.h"
 
+namespace pearpc {
+
 struct VMode {
 	int width, height, bytesPerPixel;
 };
@@ -461,4 +463,6 @@ void gcard_done()
 
 void gcard_init_config()
 {
+}
+
 }

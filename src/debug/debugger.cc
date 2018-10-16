@@ -35,6 +35,10 @@
 #include "cpu/cpu_generic/ppc_mmu.h"
 #endif
 
+#include "configparser.h"
+
+namespace pearpc {
+
 /*
  *	A function
  */
@@ -915,8 +919,9 @@ void Debugger::enter()
 #endif
 }
 
-#include "configparser.h"
 void debugger_init_config()
 {
 	gConfig->acceptConfigEntryString("debugger_exec", false);
+}
+
 }

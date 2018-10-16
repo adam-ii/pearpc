@@ -26,6 +26,8 @@
 #include "idedevice.h"
 #include "cd.h"
 
+namespace pearpc {
+
 /*
  *	IDE is handled by PCI and therefore has no base address
  */
@@ -66,6 +68,8 @@ IDEConfig *ide_get_config(int disk);
 void ide_init();
 void ide_done();
 void ide_init_config();
+
+}
 
 #endif
 

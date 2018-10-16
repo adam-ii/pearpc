@@ -27,6 +27,8 @@
 #include "system/display.h"
 #include "system/mouse.h"
 
+namespace pearpc {
+
 class SDLSystemMouse: public SystemMouse {
 public:
 
@@ -40,4 +42,6 @@ SystemMouse *allocSystemMouse()
 {
 	if (gMouse) return NULL;
 	return new SDLSystemMouse();
+}
+
 }

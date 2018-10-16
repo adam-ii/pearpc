@@ -20,6 +20,8 @@
 
 #include "fcode.h"
 
+namespace pearpc {
+
 // .104
 void fcode_opc_ex(ForthVM &vm)
 {
@@ -1490,4 +1492,6 @@ void ForthWordTick::compile(ForthVM &vm)
 
 void ForthWordTick::interprete(ForthVM &vm)
 {
+}
+
 }

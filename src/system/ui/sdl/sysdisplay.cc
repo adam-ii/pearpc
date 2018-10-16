@@ -55,6 +55,7 @@
 
 #include "syssdl.h"
 
+namespace pearpc {
 
 uint SDLSystemDisplay::bitsPerPixelToXBitmapPad(uint bitsPerPixel)
 {
@@ -465,4 +466,6 @@ SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharacteristic
 {
 	DPRINTF("Making new window %d x %d\n", chr.width, chr.height);
 	return new SDLSystemDisplay(title, chr, redraw_ms);
+}
+
 }

@@ -32,6 +32,8 @@
 #include "cpu/cpu_generic/ppc_cpu.h"
 #endif
 
+namespace pearpc {
+
 enum EvalType {
 	ET_INTEGER,
 	ET_FLOAT,
@@ -177,5 +179,7 @@ public:
 };
 
 void debugger_init_config();
+
+}
 
 #endif /* __EVAL_H__ */

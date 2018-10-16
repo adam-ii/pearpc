@@ -35,6 +35,8 @@
 #include "snprintf.h"
 #include "stream.h"
 
+namespace pearpc {
+
 /*
  *	Listener
  */
@@ -1483,3 +1485,4 @@ void putstrw(Stream *stream, const char *str)
 	throw NotImplementedException(HERE);
 }
 
+}

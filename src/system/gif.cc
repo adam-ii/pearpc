@@ -25,6 +25,8 @@
 #include "tools/except.h"
 #include "tools/snprintf.h"
 
+namespace pearpc {
+
 struct GIF_IDB {
 	byte ISH;	// = 0x2c
 	uint16 x;
@@ -252,4 +254,6 @@ void Gif::draw(SystemDisplay *display, int x, int y)
 	}
 	damageFrameBuffer(y * display->mClientChar.width*2 + x*2);
 	damageFrameBuffer((y+mHeight) * display->mClientChar.width*2 + (x+mWidth) * 2);
+}
+
 }

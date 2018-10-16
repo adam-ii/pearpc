@@ -24,6 +24,8 @@
 #include "system/types.h"
 #include "tools/stream.h"
 
+namespace pearpc {
+
 enum PromBootMethod {
 	prombmAuto,
 	prombmSelect,
@@ -37,5 +39,7 @@ void prom_init();
 void prom_init_config();
 void prom_done();
 void prom_quiesce();
+
+}
 
 #endif

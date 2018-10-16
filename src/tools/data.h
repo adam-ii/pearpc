@@ -27,6 +27,8 @@
 #include <cstdlib>
 #include "system/types.h"
 
+namespace pearpc {
+
 #ifdef HAVE_HT_OBJECTS
 typedef unsigned long ObjectID;
 
@@ -954,5 +956,7 @@ bool quickSort(List &l);
 
 bool initData();
 void doneData();
+
+}
 
 #endif /* __DATA_H__ */

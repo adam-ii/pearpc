@@ -24,6 +24,8 @@
 #include "tools/data.h"
 #include "system/event.h"
 
+namespace pearpc {
+
 class SystemDevice: public Object {
 protected:
 	SystemEventHandler	mAttachedEventHandler;
@@ -37,5 +39,7 @@ public:
 
 	virtual void	attachEventHandler(SystemEventHandler cevh);
 };
+
+}
 
 #endif /* __SYSTEM_DEVICE_H__ */

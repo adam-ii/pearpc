@@ -25,6 +25,8 @@
 #include "tools/str.h"
 #include "tools/stream.h"
 
+namespace pearpc {
+
 enum ConfigType {
     configTypeInt,
     configTypeString,
@@ -73,5 +75,7 @@ protected:
 };
 
 extern ConfigParser *gConfig;
+
+}
 
 #endif

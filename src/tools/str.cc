@@ -34,6 +34,8 @@
 #include "atom.h"
 #endif
 
+namespace pearpc {
+
 //extern "C" {
 //#include "regex.h"
 //}
@@ -733,3 +735,4 @@ ObjectID IString::getObjectID() const
 	return OBJID_ISTRING;
 }
 
+}

@@ -24,6 +24,8 @@
 #include "system/types.h"
 #include "forth.h"
 
+namespace pearpc {
+
 #define FCODEHEADER_FORMAT 8
 
 // .49
@@ -880,5 +882,7 @@ void fcode_opc_XOR(ForthVM &vm);
 #define FCODE_WPEEK 0x221
 #define FCODE_WPOKE 0x224
 #define FCODE_XOR 0x25
-#endif
 
+}
+
+#endif

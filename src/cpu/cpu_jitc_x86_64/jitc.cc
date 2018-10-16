@@ -33,6 +33,8 @@
 #include "ppc_mmu.h"
 #include "ppc_tools.h"
 
+using pearpc::ppc_malloc;
+
 static TranslationCacheFragment *jitcAllocFragment(JITC &jitc);
 
 /*

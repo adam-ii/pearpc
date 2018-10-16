@@ -28,6 +28,8 @@
 #include "str.h"
 #include "system/file.h"
 
+namespace pearpc {
+
 class String;
 
 /* Stream access mode */
@@ -370,5 +372,7 @@ void putstrp(Stream *stream, const char *str);
 char *getstrw(Stream *stream);
 /** write string into stream (zero-terminated, 16-bit chars) */
 void putstrw(Stream *stream, const char *str);
+
+}
 
 #endif /* __STREAM_H__ */

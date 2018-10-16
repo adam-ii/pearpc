@@ -420,7 +420,7 @@ static size_t dopr(char *buffer, size_t maxlen, const char *format, va_list args
 						break;
 					case 'y': {
 						/* object */
-						Object *obj = va_arg (args, Object *);
+						pearpc::Object *obj = va_arg (args, pearpc::Object *);
 						if (obj) {
 							currlen += obj->toString(buffer+currlen, maxlen - currlen);
 						} else {

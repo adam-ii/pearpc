@@ -34,6 +34,8 @@ extern "C" {
 #include "hfs/volume.h"
 }
 
+namespace pearpc {
+
 byte HFSNodeDescriptor_struct[] = {
 	STRUCT_ENDIAN_32 | STRUCT_ENDIAN_HOST,
 	STRUCT_ENDIAN_32 | STRUCT_ENDIAN_HOST,
@@ -418,4 +420,6 @@ bool HFSFileSystem::getBlessedPath(String &blessed)
 		id = dthd.u.dthd.thdParID;
 	}
 	return (id == HFS_CNID_ROOTDIR);
+}
+
 }

@@ -43,6 +43,8 @@
 
 #include "syssdl.h"
 
+namespace pearpc {
+
 SDL_Surface *	gSDLScreen;
 static bool	gSDLVideoExposePending = false;
 SDL_TimerID SDL_RedrawTimerID;
@@ -415,4 +417,6 @@ void doneUI()
 		SDL_RemoveTimer(SDL_RedrawTimerID);
 	
 	SDL_Quit();
+}
+
 }

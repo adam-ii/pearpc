@@ -29,12 +29,23 @@
 #include "debug/tracers.h"
 #include "pci.h"
 
+// PCI devices
+#include "io/graphic/gcard.h"
+#include "io/ide/ide.h"
+#include "io/macio/macio.h"
+#include "io/3c90x/3c90x.h"
+#include "io/rtl8139/rtl8139.h"
+#include "io/usb/usb.h"
+#include "io/serial/serial.h"
+
 #define PCI_ADDRESS_ECD(v) ((v) & 0x80000000)
 #define PCI_ADDRESS_BUS(v) (((v)>>16) & 0xff)
 #define PCI_ADDRESS_UNIT(v) (((v)>>11) & 0x1f)
 #define PCI_ADDRESS_FUNCT(v) (((v)>>8) & 7)
 #define PCI_ADDRESS_REG(v) (((v)) & 0xfc)
 #define PCI_ADDRESS_TYPE(v) ((v) & 3)
+
+namespace pearpc {
 
 uint32 gPCI_Address;
 uint32 gPCI_Data;
@@ -544,15 +555,6 @@ bool pci_read_device(uint32 addr, uint32 &data, int size)
 	return false;
 }
 
-// PCI devices
-#include "io/graphic/gcard.h"
-#include "io/ide/ide.h"
-#include "io/macio/macio.h"
-#include "io/3c90x/3c90x.h"
-#include "io/rtl8139/rtl8139.h"
-#include "io/usb/usb.h"
-#include "io/serial/serial.h"
-
 void pci_init()
 {
 	gPCI_Devices = new AVLTree(true);
@@ -590,4 +592,6 @@ void pci_init_config()
 	rtl8139_init_config();
 	usb_init_config();
 	serial_init_config();
+}
+
 }

@@ -46,6 +46,7 @@
 #define MM_DEVICE_FEATURE_DVD_CSS 0x0106 // .228
 #define MM_DEVICE_FEATURE_RT_STREAM 0x0107
 		
+namespace pearpc {
 
 CDROMDevice::CDROMDevice(const char *name)
 	: IDEDevice(name)
@@ -932,4 +933,6 @@ bool CDROMDeviceSCSI::SCSI_ReadSectors(uint32 start, byte *buffer,
 
 	byte ret = SCSI_ExecCmd(SCSI_READ10, SCSI_CMD_DIR_IN, params, buffer, buffer_bytes);
 	return ret == SCSI_STATUS_GOOD;
+}
+
 }

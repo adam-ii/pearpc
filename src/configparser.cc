@@ -23,6 +23,8 @@
 #include "tools/except.h"
 #include "tools/snprintf.h"
 
+namespace pearpc {
+
 ConfigParser *gConfig;
 
 ConfigEntry::ConfigEntry(const String &aName, bool mandatory)
@@ -324,3 +326,4 @@ bool ConfigParser::haveKey(const String &name)
 	return entry && entry->isSet();
 }
 
+}

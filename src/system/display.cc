@@ -23,6 +23,7 @@
 #include <cstdarg>
 #include <cstdlib>
 #include <cstring>
+#include <math.h>
 
 #include "display.h"
 #include "tools/snprintf.h"
@@ -32,15 +33,21 @@
 #include "io/cuda/cuda.h"
 #include "system/sys.h"
 #include "system/keyboard.h"
+#include "vt100.h"
+#include "font.h"
 
 byte *	gFrameBuffer = NULL;
 int 	gDamageAreaFirstAddr, gDamageAreaLastAddr;
 
 extern "C" void damageFrameBufferExt(int addr)
 {
+	using namespace pearpc;
+	
 	damageFrameBuffer(addr);
 	damageFrameBuffer(addr+0xfff);
 }
+
+namespace pearpc {
 
 #define IS_FGTRANS(c) (VC_GET_BASECOLOR(VCP_FOREGROUND((c)))==VC_TRANSPARENT)
 #define IS_BGTRANS(c) (VC_GET_BASECOLOR(VCP_BACKGROUND((c)))==VC_TRANSPARENT)
@@ -93,9 +100,6 @@ public:
 	}
 };
 
-
-#include "vt100.h"
-#include "font.h"
 
 static RGBA _16toRGBA[16] = {
 	MK_RGBA(0x22, 0x22, 0x22, 0xff),
@@ -344,7 +348,6 @@ void SystemDisplay::fillRGBA(int x, int y, int w, int h, RGBA rgba)
 	}	
 }
 
-#include <math.h>
 void SystemDisplay::drawCircleFilled(int x, int y, int w, int h, int cx, int cy, int r, RGBA fg, RGBA bg)
 {
 	for (int iy=y; iy<y+h; iy++) {
@@ -623,4 +626,6 @@ bool SystemDisplay::setFullscreenMode(bool fullscreen)
 		setMouseGrab(false);
 	}
 	return mFullscreenChanged;
+}
+
 }

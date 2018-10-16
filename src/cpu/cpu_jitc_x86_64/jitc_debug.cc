@@ -37,6 +37,8 @@
 
 #include "io/prom/promosi.h"
 
+using namespace pearpc;
+
 static FILE *gDebugLog;
 static AVLTree *symbols;
 

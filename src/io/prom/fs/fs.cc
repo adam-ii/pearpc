@@ -20,7 +20,11 @@
 
 #include "fs.h"
 
+namespace pearpc {
+
 FileSystem::FileSystem(File *device)
 {
 	mDevice = device;
+}
+
 }

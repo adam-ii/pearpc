@@ -25,6 +25,8 @@
 #include "io/prom/fs/part.h"
 #include "promosi.h"
 
+namespace pearpc {
+
 class PromNode;
 class PromProp;
 class PromInstance;
@@ -280,5 +282,7 @@ void prom_done_device_tree();
 
 PromNode *handleToPackage(PromPackageHandle ph);
 PromInstance *handleToInstance(PromInstanceHandle ih);
+
+}
 
 #endif

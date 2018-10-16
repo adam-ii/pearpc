@@ -23,6 +23,8 @@
 
 #include "system/systhread.h"
 
+namespace pearpc {
+
 enum ThreadState {
 threadInited,
 threadStarting,
@@ -150,5 +152,7 @@ public:
  */
 		void	unlock();
 };
+
+}
 
 #endif

@@ -38,6 +38,8 @@ extern "C" {
 #include "hfsplus/os.h"
 }
 
+namespace pearpc {
+
 typedef uint32	HFSCatalogNodeID;
 
 struct HFSPlusExtentDescriptor {
@@ -551,4 +553,6 @@ bool HFSPlusFileSystem::getBlessedPath(String &blessed)
 		id = rec.record.u.thread.parentID;
 	}
 	return (id == HFSP_ROOT_CNID);
+}
+
 }

@@ -26,6 +26,8 @@
 #include "system/types.h"
 #include "fs.h"
 
+namespace pearpc {
+
 enum BootMethod {
 	BM_none,
 	BM_direct,
@@ -96,5 +98,7 @@ public:
 };
 
 PartitionMap *partitions_get_map(File *aDevice, uint aDeviceBlocksize);
+
+}
 
 #endif

@@ -24,6 +24,8 @@
 #include "tools/data.h"
 #include "tools/stream.h"
 
+namespace pearpc {
+
 class FileSystem: public Object {
 protected:
 	File *mDevice;
@@ -33,5 +35,7 @@ public:
 	virtual	File *	open(const String &filename) = 0;
 	virtual	bool	getBlessedPath(String &blessed) = 0;
 };
+
+}
 
 #endif

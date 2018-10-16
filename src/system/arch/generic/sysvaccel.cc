@@ -22,6 +22,8 @@
 
 #include "tools/snprintf.h"
 
+namespace pearpc {
+
 static inline void convertBaseColor(uint &b, uint fromBits, uint toBits)
 {
 	if (toBits > fromBits) {
@@ -85,4 +87,6 @@ void sys_convert_display(
 		dest += aDestChar.scanLineLength - aDestChar.width*aDestChar.bytesPerPixel;
 		src += aSrcChar.scanLineLength - aSrcChar.width*aSrcChar.bytesPerPixel;
 	}
+}
+
 }

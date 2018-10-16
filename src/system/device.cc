@@ -25,6 +25,8 @@
 
 #include "device.h"
 
+namespace pearpc {
+
 SystemDevice::SystemDevice()
 {
 	mAttachedEventHandler = NULL;
@@ -42,4 +44,6 @@ void SystemDevice::attachEventHandler(SystemEventHandler cevh)
 		exit(1);
 	}
 	mAttachedEventHandler = cevh;
+}
+
 }

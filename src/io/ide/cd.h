@@ -23,6 +23,8 @@
 
 #include "idedevice.h"
 
+namespace pearpc {
+
 struct MSF
 {
 	uint8 m, s, f;
@@ -214,5 +216,7 @@ protected:
 	/// Destructor
 	virtual ~CDROMDeviceSCSI();
 };
+
+}
 
 #endif

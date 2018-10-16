@@ -26,6 +26,8 @@
 #include "tools/stream.h"
 #include "tools/except.h"
 
+namespace pearpc {
+
 enum ForthPosMode {
     fpmOffset,
     fpmLinePos,
@@ -198,6 +200,8 @@ public:
 		String &get(ForthVM &vm, String &s);
 	virtual void	interprete(ForthVM &vm);
 };
+
+}
 
 #endif
 

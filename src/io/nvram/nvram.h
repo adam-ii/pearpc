@@ -26,12 +26,16 @@
 #define IO_NVRAM_PA_START 0x80860000
 #define IO_NVRAM_PA_END 0x80880000
 
+namespace pearpc {
+
 void nvram_write(uint32 addr, uint32 data, int size);
 void nvram_read(uint32 addr, uint32 &data, int size);
 
 void nvram_init();
 void nvram_init_config();
 void nvram_done();
+
+}
 
 #endif
 

@@ -42,6 +42,8 @@ extern int 	gDamageAreaFirstAddr, gDamageAreaLastAddr;
 
 extern "C" void damageFrameBufferExt(int addr);
 
+namespace pearpc {
+
 inline void damageFrameBuffer(int addr)
 {
 	if (addr < gDamageAreaFirstAddr) {
@@ -286,5 +288,7 @@ extern SystemDisplay *gDisplay;
 void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyCharacteristics, bool fullscreen);
 void mainLoopUI(const std::function<bool ()> &exitLoop);
 void doneUI();
+
+}
 
 #endif /* __SYSTEM_DISPLAY_H__ */

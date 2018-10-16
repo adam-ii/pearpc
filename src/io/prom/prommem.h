@@ -25,6 +25,8 @@
 
 #define PROM_MEM_SIZE (2*1024*1024)
 
+namespace pearpc {
+
 bool prom_get_string(String &result, uint32 ea);
 bool prom_claim_page(uint32 phys);
 bool prom_claim_pages(uint32 phys, uint32 size);
@@ -39,6 +41,8 @@ void prom_mem_set(uint32 pa, int c, int size);
 
 bool prom_mem_init();
 bool prom_mem_done();
+
+}
 
 #endif
 

@@ -23,6 +23,8 @@
 #include "tools/data.h"
 #include "display.h"
 
+namespace pearpc {
+
 class Font: public Object {
 	int mCharWidth;
 	int mCharHeight;
@@ -44,5 +46,7 @@ public:
 	void	drawChar2(SystemDisplay *toDisplay, int x, int y, byte c, RGBA fgcolor, RGBA bgcolor);
 	void	drawFixedChar2(SystemDisplay *toDisplay, int x, int y, int dx, int dy, byte c, RGBA fgcolor, RGBA bgcolor);
 };
+
+}
 
 #endif

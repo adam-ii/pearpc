@@ -36,6 +36,10 @@
 #include "ata.h"
 #include "cd.h"
 #include "system/syscdrom.h"
+#include "configparser.h"
+#include "tools/except.h"
+
+namespace pearpc {
 
 #define IDE_ADDRESS_ISA_BASE	0x1f0
 #define IDE_ADDRESS_ISA_BASE2	0x354
@@ -1980,8 +1984,6 @@ IDEConfig *ide_get_config(int disk)
 #define IDE_KEY_IDE0_SLAVE_TYPE		"pci_ide0_slave_type"
 #define IDE_KEY_IDE0_SLAVE_IMG		"pci_ide0_slave_image"
 
-#include "configparser.h"
-#include "tools/except.h"
 void ide_init()
 {
 	memset(&gIDEState, 0, sizeof gIDEState);
@@ -2094,3 +2096,4 @@ void ide_init_config()
 	gConfig->acceptConfigEntryString(IDE_KEY_IDE0_SLAVE_IMG, false);
 }
 
+}

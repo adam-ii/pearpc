@@ -48,6 +48,8 @@
 
 #include "cuda.h"
 
+namespace pearpc {
+
 //#define IO_CUDA_TRACE2(str...) ht_printf(str)
 #define IO_CUDA_TRACE2(str...) 
 
@@ -992,4 +994,6 @@ void cuda_done()
 
 void cuda_init_config()
 {
+}
+
 }

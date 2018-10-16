@@ -25,8 +25,12 @@
 
 #include "system/systhread.h"
 
+namespace pearpc {
+
 extern sys_mutex	gX11Mutex;
 extern Display *	gX11Display;
 extern Window		gX11Window;
+
+}
 
 #endif

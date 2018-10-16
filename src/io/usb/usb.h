@@ -21,9 +21,13 @@
 #ifndef __IO_USB_H__
 #define __IO_USB_H__
 
+namespace pearpc {
+
 void usb_init();
 void usb_done();
 void usb_init_config();
+
+}
 
 #endif
 

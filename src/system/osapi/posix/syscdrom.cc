@@ -25,6 +25,8 @@
 #include "io/ide/cd.h"
 #include "debug/tracers.h"
 
+namespace pearpc {
+
 /// Creates a native CDROM device
 /// @param device_name The PearPC internal device name for the drive
 /// @param image_name The image / device name to identify the real hardware
@@ -36,4 +38,6 @@ CDROMDevice* createNativeCDROMDevice(const char* device_name, const char* image_
     IO_IDE_ERR("No native CDROMs supported on POSIX\n");
     // No native CDROM devices on this platform
     return NULL;
+}
+
 }

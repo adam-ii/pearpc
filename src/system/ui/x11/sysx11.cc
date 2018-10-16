@@ -38,6 +38,8 @@
 
 #include "sysx11.h"
 
+namespace pearpc {
+
 sys_mutex	gX11Mutex;
 Display *	gX11Display = NULL;
 Window		gX11Window;
@@ -335,4 +337,6 @@ void mainLoopUI(const std::function<bool ()> &exitLoop)
 void doneUI()
 {
 	XCloseDisplay(gX11Display);
+}
+
 }

@@ -27,6 +27,9 @@
 #include "system/event.h"
 
 #include "tools/data.h"
+#include "tools/str.h"
+
+namespace pearpc {
 
 #define KEY_a		0
 #define KEY_s		1
@@ -161,8 +164,6 @@ struct KeyboardCharacteristics
 	int key_toggle_full_screen;
 };
 
-#include "tools/str.h"
-
 /* system-dependent (implementation in ui / $MYUI / *.cc) */
 class SystemKeyboard: public SystemDevice {
 	int mShift;
@@ -187,6 +188,6 @@ private:
 /* system-independent (implementation in keyboard.cc) */
 extern SystemKeyboard *gKeyboard;
 
-
+}
 
 #endif /* __SYSTEM_KEYBOARD_H__ */

@@ -23,6 +23,8 @@
 #include "mouse.h"
 #include "display.h"
 
+namespace pearpc {
+
 SystemMouse *gMouse = NULL;
 
 bool SystemMouse::handleEvent(const SystemEvent &ev)
@@ -37,4 +39,6 @@ bool SystemMouse::handleEvent(const SystemEvent &ev)
 		}
 		return false;
 	}
+}
+
 }

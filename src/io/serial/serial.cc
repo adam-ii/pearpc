@@ -24,6 +24,7 @@
 #include "system/arch/sysendian.h"
 #include "io/pci/pci.h"
 #include "serial.h"
+#include "configparser.h"
 
 #include <cstring>
 
@@ -90,6 +91,8 @@
 #define IN_RI		0x40
 #define IN_DCD		0x80
 
+namespace pearpc {
+
 extern bool gSinglestep;
 
 struct SerialState {
@@ -147,6 +150,7 @@ static const char *a2n(int a)
 	} else {
 		static char bl[10];
 		sprintf(bl, "%08x", a);
+        return bl;
 	}
 }
 
@@ -241,8 +245,6 @@ virtual bool writeDeviceIO(uint r, uint32 address, uint32 data, uint size)
 };
 
 
-#include "configparser.h"
-
 #define SERIAL_KEY_INSTALLED	"pci_serial_installed"
 
 void serial_init()
@@ -259,4 +261,6 @@ void serial_done()
 void serial_init_config()
 {
 	gConfig->acceptConfigEntryIntDef(SERIAL_KEY_INSTALLED, 0);
+}
+
 }

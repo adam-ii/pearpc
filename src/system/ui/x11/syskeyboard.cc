@@ -27,6 +27,8 @@
 #include "system/display.h"
 #include "system/keyboard.h"
 
+namespace pearpc {
+
 class X11SystemKeyboard: public SystemKeyboard {
 public:
 	virtual int getKeybLEDs()
@@ -48,4 +50,6 @@ SystemKeyboard *allocSystemKeyboard()
 {
 	if (gKeyboard) return NULL;
 	return new X11SystemKeyboard();
+}
+
 }

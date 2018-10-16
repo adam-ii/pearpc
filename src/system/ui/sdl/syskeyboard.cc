@@ -26,6 +26,8 @@
 #include "system/display.h"
 #include "system/keyboard.h"
 
+namespace pearpc {
+
 class SDLSystemKeyboard: public SystemKeyboard {
 public:
 	virtual int getKeybLEDs()
@@ -77,4 +79,6 @@ SystemKeyboard *allocSystemKeyboard()
 {
 	if (gKeyboard) return NULL;
 	return new SDLSystemKeyboard();
+}
+
 }

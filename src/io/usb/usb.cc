@@ -29,11 +29,14 @@
 #include "system/arch/sysendian.h"
 #include "io/pci/pci.h"
 #include "usb.h"
+#include "configparser.h"
 
 #include <cstring>
 
 #define NUM_INTS 32		/* part of the OHCI standard */
 #define MAX_ROOT_PORTS	15	/* maximum OHCI root hub ports */
+
+namespace pearpc {
 
 struct ohci_hcca {
 	uint32	int_table[NUM_INTS];	/* Interrupt ED table */
@@ -416,8 +419,6 @@ virtual bool writeDeviceMem(uint r, uint32 address, uint32 data, uint size)
 };
 
 
-#include "configparser.h"
-
 #define USB_KEY_INSTALLED	"pci_usb_installed"
 
 void usb_init()
@@ -434,4 +435,6 @@ void usb_done()
 void usb_init_config()
 {
 	gConfig->acceptConfigEntryIntDef(USB_KEY_INSTALLED, 0);
+}
+
 }

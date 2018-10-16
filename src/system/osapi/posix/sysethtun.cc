@@ -47,6 +47,8 @@
 #include "tools/except.h"
 #include "system/sysethtun.h"
 
+using namespace pearpc;
+
 #ifndef HAVE_SETENV
 /* 
  *  That is just to support BeOS R5, even Zeta has setenv() btw

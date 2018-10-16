@@ -36,6 +36,8 @@
 
 #include "io/prom/promosi.h"
 
+using namespace pearpc;
+
 static void ppc_opc_invalid()
 {
 	if (gCPU.pc == gPromOSIEntry && gCPU.current_opc == PROM_MAGIC_OPCODE) {

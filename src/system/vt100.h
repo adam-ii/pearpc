@@ -23,6 +23,8 @@
 
 #include "system/display.h"
 
+namespace pearpc {
+
 typedef int vcp;
 
 #define VCP(vc_fg, vc_bg) (vcp)((vc_bg) | ((vc_fg)<<8))
@@ -80,5 +82,7 @@ public:
 };
 
 void vcpToAnsi(char *buf32, vcp color);
+
+}
 
 #endif /* __VT100_H__ */

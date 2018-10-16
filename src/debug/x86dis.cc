@@ -27,6 +27,8 @@
 #include "tools/strtools.h"
 #include "x86dis.h"
 
+namespace pearpc {
+
 #define mkscale mkmod
 #define mkbase mkrm
 
@@ -1536,4 +1538,6 @@ uint64 x86_64dis::getoffset()
 void x86_64dis::filloffset(CPU_ADDR &addr, uint64 offset)
 {
 	addr.flat64.addr = offset;
+}
+
 }

@@ -22,9 +22,13 @@
 
 #include "tools/stream.h"
 
+namespace pearpc {
+
 struct hfs_devicehandle_s {
 	File *	mDevice;
 	FileOfs	mStart;
 };
+
+}
 
 #endif

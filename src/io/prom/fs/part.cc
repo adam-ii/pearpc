@@ -36,6 +36,8 @@
 #include "hfs.h"
 #include "hfsplus.h"
 
+namespace pearpc {
+
 #define APPLE_PARTITION_STATUS_BOOTABLE	8
 
 #define APPLE_DRIVER_MAGIC	MAGIC16("ER")
@@ -502,4 +504,6 @@ PartitionMap *partitions_get_map(File *aDevice, uint aDeviceBlocksize)
 	
 	IO_PROM_FS_TRACE("probe found no partitions in %d bytes block\n",blocksize);
 	return new PartitionMap(aDevice, aDeviceBlocksize);
+}
+
 }

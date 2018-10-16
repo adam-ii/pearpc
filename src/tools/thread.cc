@@ -25,6 +25,8 @@
 #include "except.h"
 #include "thread.h"
 
+namespace pearpc {
+
 static void *start_thread_routine(void *t)
 {
 	Thread *thread = ((Thread *)t);
@@ -199,3 +201,4 @@ void Semaphore::unlock()
 	sys_unlock_semaphore(sem);
 }
 
+}

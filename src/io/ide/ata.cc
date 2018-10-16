@@ -27,6 +27,8 @@
 
 #include "tools/snprintf.h"
 
+namespace pearpc {
+
 ATADevice::ATADevice(const char *name)
 	: IDEDevice(name)
 {
@@ -121,3 +123,4 @@ uint ATADeviceFile::promRead(byte *buf, uint size)
 	return sys_fread(mFile, buf, size);
 }
 
+}

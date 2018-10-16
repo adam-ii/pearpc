@@ -30,6 +30,8 @@
 #include "prommem.h"
 #include "promosi.h"
 
+namespace pearpc {
+
 uint32 gPromOSIEntry;
 
 void prom_service_start_cpu(prom_args *pa)
@@ -675,4 +677,6 @@ ok:
 	ppc_cpu_set_gpr(0, 3, 0);
 	// return
 //	gCPU.npc = gCPU.lr;
+}
+
 }

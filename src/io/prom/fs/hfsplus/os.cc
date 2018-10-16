@@ -61,6 +61,9 @@ extern "C" {
 #include "../hfsplusglue.h"
 #include "tools/except.h"
 
+using pearpc::hfsplus_devicehandle_s;
+using pearpc::IOException;
+
 /** Offset that is silently used by os_seek.
  *  Nedded to transparaently support things like partitions */
 /*APPLEUInt64 os_offset;*/

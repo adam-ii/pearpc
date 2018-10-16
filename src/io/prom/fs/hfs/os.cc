@@ -54,6 +54,9 @@ extern "C" {
 #include "../hfsglue.h"
 #include "tools/except.h"
 
+using pearpc::hfs_devicehandle_s;
+using pearpc::IOException;
+
 /*
  * NAME:	os->open()
  * DESCRIPTION:	open and lock a new descriptor from the given path and mode

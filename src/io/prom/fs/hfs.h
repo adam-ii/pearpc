@@ -25,6 +25,8 @@
 #include "hfsglue.h"
 #include "part.h"
 
+namespace pearpc {
+
 bool tryBootHFS(File *aDevice, uint aDeviceBlocksize, FileOfs start, PartitionEntry *partEnt);
 
 /***/
@@ -42,5 +44,7 @@ public:
 	/* new */
 	virtual	File *	openBootFile();
 };
+
+}
 
 #endif

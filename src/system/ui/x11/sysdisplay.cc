@@ -41,6 +41,8 @@
 #define DPRINTF(a...)
 //#define DPRINTF(a...) ht_printf(a)
 
+namespace pearpc {
+
 static void findMaskShiftAndSize(int &shift, int &size, uint bitmask)
 {
 	if (!bitmask) {
@@ -474,4 +476,6 @@ SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharacteristic
 {
 	if (gDisplay) return NULL;
 	return new X11SystemDisplay(title, chr, redraw_ms);
+}
+
 }

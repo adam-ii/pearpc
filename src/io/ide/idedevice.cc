@@ -26,6 +26,8 @@
 #include "tools/snprintf.h"
 #include "tools/except.h"
 
+namespace pearpc {
+
 /*
  *
  */
@@ -190,4 +192,6 @@ File *IDEDevice::promGetRawFile()
 int IDEDevice::toString(char *buf, int buflen) const
 {
 	return ht_snprintf(buf, buflen, "%s", mName);
+}
+
 }

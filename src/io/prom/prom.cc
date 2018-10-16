@@ -26,6 +26,8 @@
 #include "prommem.h"
 #include "prom.h"
 
+namespace pearpc {
+
 PromBootMethod gPromBootMethod;
 String gPromBootPath;
 
@@ -110,4 +112,6 @@ void prom_done()
 {
 	prom_done_device_tree();
 	prom_mem_done();
+}
+
 }

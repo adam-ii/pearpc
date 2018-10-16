@@ -23,6 +23,8 @@
 #include "keyboard.h"
 #include "display.h"
 
+namespace pearpc {
+
 SystemKeyboard *gKeyboard = NULL;
 
 static const char *key_names[] = {
@@ -206,4 +208,6 @@ bool SystemKeyboard::setKeyConfig(KeyboardCharacteristics keycon)
 KeyboardCharacteristics &SystemKeyboard::getKeyConfig()
 {
 	return keyConfig;
+}
+
 }

@@ -26,8 +26,12 @@
 
 #include "system/types.h"
 
+namespace pearpc {
+
 /* system-dependent (implementation in $MYSYSTEM/ *.cc) */
 extern CDROMDevice *createNativeCDROMDevice(const char *device_name,
 					    const char *image_name);
+
+}
 
 #endif /* __SYSETHTUN_H__ */

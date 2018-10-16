@@ -26,6 +26,8 @@
 #include "system/display.h"
 #include "system/systhread.h"
 
+namespace pearpc {
+
 extern SDL_Surface *	gSDLScreen;
 
 class SDLSystemDisplay: public SystemDisplay {
@@ -62,6 +64,6 @@ public:
 	virtual void initCursor();
 };
 
-
+}
 
 #endif

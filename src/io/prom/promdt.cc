@@ -39,6 +39,8 @@
 
 #include "info.h"
 
+namespace pearpc {
+
 PromNode *gPromRoot;
 AVLTree *gPromPackages;
 AVLTree *gPromInstances;
@@ -1684,4 +1686,6 @@ void prom_done_device_tree()
 		delete gPromRoot;
 		gPromRoot = NULL;
 	}
+}
+
 }

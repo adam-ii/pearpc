@@ -48,10 +48,13 @@
 #include "io/pci/pci.h"
 #include "debug/tracers.h"
 #include "rtl8139.h"
+#include "configparser.h"
+#include "tools/strtools.h"
 
 #define MAX_PACKET_SIZE		6000
 #define MAX_PACKETS		128
 
+namespace pearpc {
 
 enum RxHeaderBits {
 	Rx_ROK =  1<<0, // receive okay
@@ -720,9 +723,6 @@ static void *rtl8139HandleRxQueue(void *nic)
 
 bool rtl8139_installed = false;
 
-#include "configparser.h"
-#include "tools/strtools.h"
-
 #define RTL8139_KEY_INSTALLED   "pci_rtl8139_installed"
 #define RTL8139_KEY_MAC         "pci_rtl8139_mac"
 
@@ -792,4 +792,6 @@ void rtl8139_init_config()
 {
 	gConfig->acceptConfigEntryIntDef(RTL8139_KEY_INSTALLED, 0);
 	gConfig->acceptConfigEntryString(RTL8139_KEY_MAC, false);
+}
+
 }

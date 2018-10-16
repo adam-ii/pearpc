@@ -21,9 +21,13 @@
 #ifndef __IO_SERIAL_H__
 #define __IO_SERIAL_H__
 
+namespace pearpc {
+
 void serial_init();
 void serial_done();
 void serial_init_config();
+
+}
 
 #endif
 

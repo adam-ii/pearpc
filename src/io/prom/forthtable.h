@@ -24,6 +24,11 @@
 #include "tools/data.h"
 #include "forth.h"
 
+namespace pearpc {
+
 void forth_build_vocabulary(Container &dict, ForthVM &vm);
 void forth_disassemble(ForthVM &vm);
+    
+}
+
 #endif

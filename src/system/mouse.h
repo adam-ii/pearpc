@@ -28,6 +28,8 @@
 
 #include "tools/data.h"
 
+namespace pearpc {
+
 /* system-dependent (implementation in ui / $MYUI / *.cc) */
 class SystemMouse: public SystemDevice {
 public:
@@ -36,5 +38,7 @@ public:
 
 /* system-independent (implementation in keyboard.cc) */
 extern SystemMouse *gMouse;
+
+}
 
 #endif /* __SYSTEM_KEYBOARD_H__ */

@@ -33,6 +33,8 @@
 #define VTERMLOG(a...)
 #endif
 
+namespace pearpc {
+
 static void readCSIParamsMax16(int Pn[], int &n, int &i, const char *buf, int buflen, bool allow_spaces)
 {
 	n = 0;
@@ -851,3 +853,4 @@ void vcpToAnsi(char *buf32, vcp color)
 	i += sprintf(buf32+i, "m");
 }
 
+}

@@ -32,6 +32,8 @@
 #include "jitc_asm.h"
 #include "x86asm.h"
 
+using namespace pearpc;
+
 static uint64 gDECwriteITB;
 static uint64 gDECwriteValue;
 

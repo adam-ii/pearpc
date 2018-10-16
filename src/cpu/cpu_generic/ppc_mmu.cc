@@ -39,6 +39,8 @@
 #include "ppc_exc.h"
 #include "ppc_tools.h"
 
+using namespace pearpc;
+
 byte *gMemory = NULL;
 uint32 gMemorySize;
 

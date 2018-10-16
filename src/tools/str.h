@@ -24,6 +24,8 @@
 
 #include "data.h"
 
+namespace pearpc {
+
 enum StringCase {
 	stringCaseLower,
 	stringCaseUpper,
@@ -310,6 +312,8 @@ inline bool String::operator == (const char *s) const
 inline bool String::operator != (const char *s) const
 {
 	return compare(s) != 0;
+}
+
 }
 
 #endif

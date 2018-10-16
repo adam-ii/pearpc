@@ -23,11 +23,14 @@
 
 #include "debug/tracers.h"
 #include "nvram.h"
+#include "configparser.h"
 
 #define NVRAM_IMAGE_SIZE 0x2000
 #define NVRAM_FREE_PARTITION_NAME "wwwwwwwwwwww"
 #define NVRAM_FREE_PARTITION_MAGIC 0x7f
 #define NVRAM_PARTITION_HDR_SIZE 16
+
+namespace pearpc {
 
 struct NVRAM {
 	FILE *f;
@@ -84,7 +87,6 @@ static uint8 calcChksum(byte *buf)
 }
 
 #define NRAM_KEY_FILE	"nvram_file"
-#include "configparser.h"
 
 void nvram_init()
 {
@@ -121,3 +123,4 @@ void nvram_done()
 	fclose(gNVRAM.f);
 }
 
+}

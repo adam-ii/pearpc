@@ -23,6 +23,8 @@
 #include "tools/data.h"
 #include "tools/str.h"
 
+namespace pearpc {
+
 void sys_gui_init();
 bool sys_gui_open_file_dialog(String &ret, const String &title, const String &filespec, const String &filespecname, const String &home, bool existing);
 
@@ -37,5 +39,7 @@ bool sys_gui_open_file_dialog(String &ret, const String &title, const String &fi
 #define MB_CANCEL	0x400
 
 int sys_gui_messagebox(const String &title, const String &text, int buttons);
+
+}
 
 #endif

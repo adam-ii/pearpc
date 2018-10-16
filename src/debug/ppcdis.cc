@@ -27,6 +27,8 @@
 #include "ppcdis.h"
 #include "ppcopc.h"
 
+namespace pearpc {
+
 PPCDisassembler::PPCDisassembler(int aMode)
 {
 	mode = aMode;
@@ -285,4 +287,4 @@ bool PPCDisassembler::validInsn(dis_insn *disasm_insn)
 	return ((ppcdis_insn*)disasm_insn)->valid;
 }
 
-
+}

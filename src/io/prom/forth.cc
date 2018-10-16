@@ -28,6 +28,8 @@
 #include "forth.h"
 #include "forthtable.h"
 
+namespace pearpc {
+
 ForthPos::ForthPos()
 {
 	mFpm = fpmLinePos;
@@ -545,3 +547,4 @@ void ForthVar::interprete(ForthVM &vm)
 {
 }
 
+}

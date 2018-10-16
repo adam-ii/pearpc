@@ -39,6 +39,9 @@
 
 #include "io/prom/promosi.h"
 
+using pearpc::call_prom_osi;
+using pearpc::gPromOSIEntry;
+
 static void ppc_opc_invalid()
 {
 	SINGLESTEP("unknown instruction\n");

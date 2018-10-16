@@ -58,6 +58,8 @@
 #define IO_PCI_DEVICE_PA_START	0x80000000
 #define IO_PCI_DEVICE_PA_END	0x81000000
 
+namespace pearpc {
+
 extern uint32 gPCI_Data;
 extern Container *gPCI_Devices;
 
@@ -109,6 +111,8 @@ bool pci_read_device(uint32 addr, uint32 &data, int size);
 void pci_init();
 void pci_done();
 void pci_init_config();
+
+}
 
 #endif
 

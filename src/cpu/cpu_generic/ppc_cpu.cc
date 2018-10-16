@@ -41,6 +41,8 @@
 
 //#include "io/graphic/gcard.h"
 
+using namespace pearpc;
+
 PPC_CPU_State gCPU;
 Debugger *gDebugger;
 

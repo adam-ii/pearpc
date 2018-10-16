@@ -24,6 +24,8 @@
 #include "system/types.h"
 #include "tools/stream.h"
 
+namespace pearpc {
+
 bool prom_user_boot_partition(File *&file, uint32 &size, bool &direct, uint32 &loadAddr, uint32 &entryAddr);
 
 bool mapped_load_elf(File &f);
@@ -32,5 +34,7 @@ bool mapped_load_chrp(File &f);
 bool mapped_load_direct(File &f, uint vaddr, uint pc);
 
 bool prom_load_boot_file(const String &loadfile);
+
+}
 
 #endif

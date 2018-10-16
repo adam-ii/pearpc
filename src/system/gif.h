@@ -23,6 +23,8 @@
 #include "tools/data.h"
 #include "system/display.h"
 
+namespace pearpc {
+
 class Gif: public Object {
 	byte *pic;
 	byte mPal[768];
@@ -34,5 +36,7 @@ public:
 	bool	loadFromByteStream(Stream &str);
 	void	draw(SystemDisplay *display, int x, int y);
 };
+
+}
 
 #endif

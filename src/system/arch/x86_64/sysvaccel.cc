@@ -32,6 +32,8 @@ extern "C" void __attribute__((regparm (3))) x86_sse2_convert_2be555_to_4le888(u
 extern "C" void __attribute__((regparm (3))) x86_convert_4be888_to_4le888(uint32 pixel, byte *input, byte *output);
 #endif
 
+namespace pearpc {
+
 static inline void convertBaseColor(uint &b, uint fromBits, uint toBits)
 {
 	if (toBits > fromBits) {
@@ -127,4 +129,6 @@ void sys_convert_display(
 		genericConvertDisplay(aSrcChar, aDestChar, aSrcBuf, aDestBuf, firstLine, lastLine);
 	}
 #endif
+}
+
 }
