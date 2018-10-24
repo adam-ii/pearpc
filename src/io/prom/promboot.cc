@@ -1563,12 +1563,10 @@ bool prom_user_boot_partition(File *&ret_file, uint32 &size, bool &direct, uint3
 	return false;
 }
 
-bool prom_load_boot_file()
+bool prom_load_boot_file(const String &loadfile)
 {
 	if (gPromBootMethod == prombmForce) {
-		if (gConfig->haveKey("prom_loadfile")) {
-			String loadfile;
-			gConfig->getConfigString("prom_loadfile", loadfile);
+		if (!loadfile.isEmpty()) {
 			PromNode *pn = findDevice(gPromBootPath.contentChar(), FIND_DEVICE_FIND, NULL);
 			if (pn) {
 				gBootNodeID = pn->getPHandle();

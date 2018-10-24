@@ -22,6 +22,8 @@
 #include <cstring>
 #include <exception>
 #include <unistd.h>
+#include <thread>
+#include <atomic>
 
 #include "info.h"
 #include "cpu/cpu.h"
@@ -195,7 +197,29 @@ extern "C" int SDL_main(int argc, char *argv[])
 }
 #endif
 
+void cpu_thread(std::atomic_bool& running, const String &prom_loadfile)
+{
+	if (!prom_load_boot_file(prom_loadfile)) {
+		ht_printf("cannot find boot file.\n");
+	}
+
+	ppc_cpu_map_framebuffer(IO_GCARD_FRAMEBUFFER_PA_START, IO_GCARD_FRAMEBUFFER_EA);
+	ppc_cpu_run();
+
+	running = false;
+}
+
+std::thread start_cpu_thread(std::atomic_bool& running, const String &prom_loadfile)
+{
+	return std::thread(cpu_thread, std::ref(running), std::cref(prom_loadfile));
+}
+
+#if defined(__APPLE__) && defined(PEARPC_UI_SDL)
+// SDL 1.2.15 has to run its main before handing off to SDL_main
+extern "C" int SDL_main(int argc, char *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {	
 	if (argc != 2) {
 		usage();
@@ -412,20 +436,29 @@ int main(int argc, char *argv[])
 
 		testforth();
 
-		if (!prom_load_boot_file()) {
-			ht_printf("cannot find boot file.\n");
-			return 1;
+		String prom_loadfile;
+		if (gConfig->haveKey("prom_loadfile"))
+		{
+			gConfig->getConfigString("prom_loadfile", prom_loadfile);
 		}
 
 		// this was your last chance to visit the config..
 		delete gConfig;
-
-		ppc_cpu_map_framebuffer(IO_GCARD_FRAMEBUFFER_PA_START, IO_GCARD_FRAMEBUFFER_EA);
+		gConfig = NULL;
 
 		gDisplay->print("now starting client...");
 		gDisplay->setAnsiColor(VCP(VC_WHITE, CONSOLE_BG));
 
-		ppc_cpu_run();
+		// begin cpu execution on a new thread
+		std::atomic_bool cpu_running(true);
+		auto cpu_thread = start_cpu_thread(cpu_running, prom_loadfile);
+
+		mainLoopUI([&cpu_running] () -> bool {
+			return !cpu_running;
+		});
+
+		// wait for cpu thread to complete
+		cpu_thread.join();
 
 		io_done();
 

@@ -253,10 +253,39 @@ static inline bool checkHandleX11Event()
 	return true;
 }
 
-static void *X11eventLoop(void *p)
+extern SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharacteristics &chr, int redraw_ms, bool fullscreen);
+extern SystemMouse *allocSystemMouse();
+extern SystemKeyboard *allocSystemKeyboard();
+
+void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyConfig, bool fullscreen)
+{
+	// connect to X server
+	const char *display = getenv("DISPLAY");
+	if (display == NULL) {
+		display = ":0.0";
+	}
+	gX11Display = XOpenDisplay(display);
+	if (!gX11Display) {
+		ht_printf("can't open X11 display (%s)!\n", display);
+		exit(1);
+	}
+
+	sys_create_mutex(&gX11Mutex);
+
+	gDisplay = allocSystemDisplay(title, aCharacteristics, redraw_ms, fullscreen);
+	gMouse = allocSystemMouse();
+	gKeyboard = allocSystemKeyboard();
+	if(!gKeyboard->setKeyConfig(keyConfig)) {
+		ht_printf("no keyConfig, or is empty");
+		exit(1);
+	}
+	gDisplay->updateTitle();
+}
+
+void mainLoopUI(const std::function<bool ()> &exitLoop)
 {
 	int fd = ConnectionNumber(gX11Display);
-
+	
 	int redraw_interval_msec = gDisplay->mRedraw_ms;
 	uint64 redraw_interval_clk = redraw_interval_msec*sys_get_hiresclk_ticks_per_second()/1000;
 	uint64 clk_per_sec = sys_get_hiresclk_ticks_per_second();
@@ -296,43 +325,10 @@ static void *X11eventLoop(void *p)
 		for (int i=0; i<500; i++) {
 			if (!checkHandleX11Event()) break;
 		}
-	}
-	return NULL;
-}
-
-extern SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharacteristics &chr, int redraw_ms, bool fullscreen);
-extern SystemMouse *allocSystemMouse();
-extern SystemKeyboard *allocSystemKeyboard();
-
-void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyConfig, bool fullscreen)
-{
-	// connect to X server
-	const char *display = getenv("DISPLAY");
-	if (display == NULL) {
-		display = ":0.0";
-	}
-	gX11Display = XOpenDisplay(display);
-	if (!gX11Display) {
-		ht_printf("can't open X11 display (%s)!\n", display);
-		exit(1);
-	}
-
-	sys_create_mutex(&gX11Mutex);
-
-	gDisplay = allocSystemDisplay(title, aCharacteristics, redraw_ms, fullscreen);
-	gMouse = allocSystemMouse();
-	gKeyboard = allocSystemKeyboard();
-	if(!gKeyboard->setKeyConfig(keyConfig)) {
-		ht_printf("no keyConfig, or is empty");
-		exit(1);
-	}
-	gDisplay->updateTitle();
-
-	sys_thread X11eventLoopThread;
-
-	if (sys_create_thread(&X11eventLoopThread, 0, X11eventLoop, NULL)) {
-		ht_printf("can't create x11 event thread!\n");
-		exit(1);
+		
+		if (exitLoop()) {
+			break;
+		}
 	}
 }
 

@@ -25,6 +25,7 @@
 #include "tools/stream.h"
 #include "types.h"
 #include "keyboard.h"
+#include <functional>
 
 /* codepages */
 
@@ -283,6 +284,7 @@ extern SystemDisplay *gDisplay;
 
 // should be declared elsewhere
 void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyCharacteristics, bool fullscreen);
+void mainLoopUI(const std::function<bool ()> &exitLoop);
 void doneUI();
 
 #endif /* __SYSTEM_DISPLAY_H__ */

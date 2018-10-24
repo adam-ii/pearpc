@@ -15,6 +15,8 @@ else()
 endif()
 
 add_compile_options(
+    -DPEARPC_UI_$<UPPER_CASE:${PEARPC_UI}>
+    -DPEARPC_CPU_$<UPPER_CASE:${PEARPC_CPU}>
     -DSYSTEM_ARCH_SPECIFIC_ENDIAN_DIR="system/arch/${PEARPC_CPU}/sysendian.h"
     -DSYSTEM_ARCH_SPECIFIC_FEATURES_DIR="system/arch/${PEARPC_CPU}/sysfeatures.h"
     -DSYSTEM_OSAPI_SPECIFIC_TYPES_HDR="system/osapi/${OSAPI_DIR}/types.h"

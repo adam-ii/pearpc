@@ -348,54 +348,6 @@ static Uint32 SDL_redrawCallback(Uint32 interval, void *param)
 }
 
 sys_timer gSDLRedrawTimer;
-static bool eventThreadAlive;
-
-static void *SDLeventLoop(void *p)
-{
-	eventThreadAlive = true;
-#ifdef __WIN32__
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE) < 0) {
-#else
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTTHREAD | SDL_INIT_NOPARACHUTE) < 0) {
-#endif
-		ht_printf("SDL: Unable to init: %s\n", SDL_GetError());
-		exit(1);
-	}
-
-	atexit(SDL_Quit); // give SDl a chance to clean up before exit!
-	sd = (SDLSystemDisplay*)gDisplay;
-
-	sd->initCursor();
-
-	sd->updateTitle();
-	sd->mEventThreadID = SDL_ThreadID();
-
-        SDL_WM_GrabInput(SDL_GRAB_OFF);
-
-	sd->changeResolution(sd->mClientChar);
-	sd->setExposed(true);
-
-	gSDLVideoExposePending = false;
-	SDL_RedrawTimerID = SDL_AddTimer(gDisplay->mRedraw_ms, SDL_redrawCallback, NULL);
-
-	sd->setFullscreenMode(sd->mFullscreen);
-
-	SDL_Event event;
-	do {
-		SDL_WaitEvent(&event);
-	} while (handleSDLEvent(event));
-
-	gDisplay->setMouseGrab(false);
-
-	if (SDL_RedrawTimerID)
-		SDL_RemoveTimer(SDL_RedrawTimerID);
-
-	ppc_cpu_stop();
-
-	eventThreadAlive = false;
-	
-	return NULL;
-}
 
 SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharacteristics &chr, int redraw_ms);
 SystemKeyboard *allocSystemKeyboard();
@@ -407,8 +359,6 @@ void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, i
 	createSDLToADBKeytable();
 #endif
 
-	sys_thread SDLeventLoopThread;
-
 	gDisplay = allocSystemDisplay(title, aCharacteristics, redraw_ms);
 	gMouse = allocSystemMouse();
 	gKeyboard = allocSystemKeyboard();
@@ -419,19 +369,50 @@ void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, i
 
 	gDisplay->mFullscreen = fullscreen;
 
-	if (sys_create_thread(&SDLeventLoopThread, 0, SDLeventLoop, NULL)) {
-		ht_printf("SDL: can't create event thread!\n");
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE) < 0) {
+		ht_printf("SDL: Unable to init: %s\n", SDL_GetError());
 		exit(1);
 	}
+	
+	atexit(SDL_Quit); // give SDl a chance to clean up before exit!
+	sd = (SDLSystemDisplay*)gDisplay;
+	
+	sd->initCursor();
+	
+	sd->updateTitle();
+	sd->mEventThreadID = SDL_ThreadID();
+
+	SDL_WM_GrabInput(SDL_GRAB_OFF);
+	
+	sd->changeResolution(sd->mClientChar);
+	sd->setExposed(true);
+	
+	gSDLVideoExposePending = false;
+	SDL_RedrawTimerID = SDL_AddTimer(gDisplay->mRedraw_ms, SDL_redrawCallback, NULL);
+	
+	sd->setFullscreenMode(fullscreen);
+}
+
+void mainLoopUI(const std::function<bool ()> &exitLoop)
+{
+	SDL_Event event;
+	do {
+		if (exitLoop()) {
+			break;
+		}
+		
+		SDL_WaitEvent(&event);
+	} while (handleSDLEvent(event));
+	
+	ppc_cpu_stop();
 }
 
 void doneUI()
 {
-	if (eventThreadAlive) {
-		SDL_Event event;
-		event.type = SDL_QUIT;
-		SDL_PushEvent(&event);
-		while (eventThreadAlive) SDL_Delay(10); // FIXME: UGLY!
-	}
+	gDisplay->setMouseGrab(false);
+	
+	if (SDL_RedrawTimerID)
+		SDL_RemoveTimer(SDL_RedrawTimerID);
+	
 	SDL_Quit();
 }

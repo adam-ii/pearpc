@@ -31,6 +31,6 @@ bool mapped_load_xcoff(File &f, uint disp_ofs);
 bool mapped_load_chrp(File &f);
 bool mapped_load_direct(File &f, uint vaddr, uint pc);
 
-bool prom_load_boot_file();
+bool prom_load_boot_file(const String &loadfile);
 
 #endif
