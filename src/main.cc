@@ -54,6 +54,11 @@
 #include "ppc_img.h"
 #include "ppc_button_changecd.h"
 
+static_assert(sizeof(uint8)  == 1, "sizeof(uint8) != 1");
+static_assert(sizeof(uint16) == 2, "sizeof(uint16) != 2");
+static_assert(sizeof(uint32) == 4, "sizeof(uint32) != 4");
+static_assert(sizeof(uint64) == 8, "sizeof(uint64) != 8");
+
 using namespace pearpc;
 
 void changeCDFunc(void *p)
@@ -230,19 +235,6 @@ int main(int argc, char *argv[])
 	
 	sys_gui_init();
 	
- 	if (sizeof(uint8) != 1) {
-		ht_printf("sizeof(uint8) == %d != 1\n", sizeof(uint8)); exit(-1);
-	}
-	if (sizeof(uint16) != 2) {
-		ht_printf("sizeof(uint16) == %d != 2\n", sizeof(uint16)); exit(-1);
-	}
-	if (sizeof(uint32) != 4) {
-		ht_printf("sizeof(uint32) == %d != 4\n", sizeof(uint32)); exit(-1);
-	}
-	if (sizeof(uint64) != 8) {
-		ht_printf("sizeof(uint64) == %d != 8\n", sizeof(uint64)); exit(-1);
-	}
-
 #if defined(WIN32) || defined(__WIN32__)
 #else
 	strncpy(gAppFilename, argv[0], sizeof gAppFilename);
