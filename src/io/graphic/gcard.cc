@@ -410,7 +410,7 @@ bool gcard_finish_characteristic(DisplayCharacteristics &aChar)
 	return true;
 }
 
-bool gcard_set_mode(DisplayCharacteristics &mode)
+bool gcard_set_mode(const DisplayCharacteristics &mode)
 {
 	uint tmp = gGraphicModes->getObjIdx(gGraphicModes->find(&mode));
 	if (tmp == InvIdx) {

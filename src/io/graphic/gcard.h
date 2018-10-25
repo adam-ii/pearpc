@@ -124,7 +124,7 @@ static inline void gcard_read128_native(uint32 addr, uint128 *data)
 void gcard_raise_interrupt();
 
 void gcard_osi(int cpu);
-bool gcard_set_mode(DisplayCharacteristics &mode);
+bool gcard_set_mode(const DisplayCharacteristics &mode);
 
 
 void gcard_init();

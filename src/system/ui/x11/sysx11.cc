@@ -33,6 +33,7 @@
 #include "system/display.h"
 #include "system/keyboard.h"
 #include "system/mouse.h"
+#include "clientconfig.h"
 
 #include "tools/snprintf.h"
 
@@ -259,7 +260,7 @@ extern SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharact
 extern SystemMouse *allocSystemMouse();
 extern SystemKeyboard *allocSystemKeyboard();
 
-void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyConfig, bool fullscreen)
+void initUI(const char *title, const ClientConfig& clientConfig)
 {
 	// connect to X server
 	const char *display = getenv("DISPLAY");
@@ -274,10 +275,10 @@ void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, i
 
 	sys_create_mutex(&gX11Mutex);
 
-	gDisplay = allocSystemDisplay(title, aCharacteristics, redraw_ms, fullscreen);
+	gDisplay = allocSystemDisplay(title, clientConfig.getDisplayConfig(), clientConfig.getRedrawInterval(), clientConfig.getFullScreen());
 	gMouse = allocSystemMouse();
 	gKeyboard = allocSystemKeyboard();
-	if(!gKeyboard->setKeyConfig(keyConfig)) {
+	if(!gKeyboard->setKeyConfig(clientConfig.getKeyConfig())) {
 		ht_printf("no keyConfig, or is empty");
 		exit(1);
 	}

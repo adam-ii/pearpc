@@ -38,6 +38,7 @@
 #include "system/mouse.h"
 #include "system/systhread.h"
 #include "system/systimer.h"
+#include "clientconfig.h"
 
 #include "tools/snprintf.h"
 
@@ -355,21 +356,21 @@ SystemDisplay *allocSystemDisplay(const char *title, const DisplayCharacteristic
 SystemKeyboard *allocSystemKeyboard();
 SystemMouse *allocSystemMouse();
 
-void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyConfig, bool fullscreen)
+void initUI(const char *title, const ClientConfig& clientConfig)
 {
 #if 0
 	createSDLToADBKeytable();
 #endif
 
-	gDisplay = allocSystemDisplay(title, aCharacteristics, redraw_ms);
+	gDisplay = allocSystemDisplay(title, clientConfig.getDisplayConfig(), clientConfig.getRedrawInterval());
 	gMouse = allocSystemMouse();
 	gKeyboard = allocSystemKeyboard();
-	if (!gKeyboard->setKeyConfig(keyConfig)) {
+	if (!gKeyboard->setKeyConfig(clientConfig.getKeyConfig())) {
 		ht_printf("no keyConfig, or is empty");
 		exit(1);
 	}
 
-	gDisplay->mFullscreen = fullscreen;
+	gDisplay->mFullscreen = clientConfig.getFullScreen();
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE) < 0) {
 		ht_printf("SDL: Unable to init: %s\n", SDL_GetError());
@@ -392,7 +393,7 @@ void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, i
 	gSDLVideoExposePending = false;
 	SDL_RedrawTimerID = SDL_AddTimer(gDisplay->mRedraw_ms, SDL_redrawCallback, NULL);
 	
-	sd->setFullscreenMode(fullscreen);
+	sd->setFullscreenMode(clientConfig.getFullScreen());
 }
 
 void mainLoopUI(const std::function<bool ()> &exitLoop)

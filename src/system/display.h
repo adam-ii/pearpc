@@ -44,6 +44,8 @@ extern "C" void damageFrameBufferExt(int addr);
 
 namespace pearpc {
 
+class ClientConfig;
+	
 inline void damageFrameBuffer(int addr)
 {
 	if (addr < gDamageAreaFirstAddr) {
@@ -285,7 +287,7 @@ public:
 extern SystemDisplay *gDisplay;
 
 // should be declared elsewhere
-void initUI(const char *title, const DisplayCharacteristics &aCharacteristics, int redraw_ms, const KeyboardCharacteristics &keyCharacteristics, bool fullscreen);
+void initUI(const char *title, const ClientConfig& clientConfig);
 void mainLoopUI(const std::function<bool ()> &exitLoop);
 void doneUI();
 

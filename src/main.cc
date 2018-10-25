@@ -45,7 +45,8 @@
 #include "system/mouse.h"
 #include "system/keyboard.h"
 #include "system/sys.h"
-#include "configparser.h"
+#include "clientconfig.h"
+#include "main.h"
 
 #include "system/gif.h"
 #include "system/ui/gui.h"
@@ -204,30 +205,156 @@ extern "C" int SDL_main(int argc, char *argv[])
 }
 #endif
 
-void cpu_thread(std::atomic_bool& running, const String &prom_loadfile)
-{
-	if (!prom_load_boot_file(prom_loadfile)) {
-		ht_printf("cannot find boot file.\n");
+namespace pearpc {
+	namespace main {
+		
+		struct ClientCPUState
+		{
+			std::atomic_bool m_cpu_running;
+			std::thread m_thread;
+		};
+		
+		void cpu_thread(std::shared_ptr<ClientCPUState> state, std::shared_ptr<ClientConfig> config)
+		{
+			if (!prom_load_boot_file(config->getPromFile())) {
+				ht_printf("cannot find boot file.\n");
+			}
+			
+			config.reset();
+			
+			ppc_cpu_map_framebuffer(IO_GCARD_FRAMEBUFFER_PA_START, IO_GCARD_FRAMEBUFFER_EA);
+			ppc_cpu_run();
+			
+			state->m_cpu_running = false;
+		}
+		
+		std::thread start_cpu_thread(const std::shared_ptr<ClientCPUState> &state, const std::shared_ptr<ClientConfig> &config)
+		{
+			return std::thread(cpu_thread, state, config);
+		}
+		
+		std::shared_ptr<ClientConfig> loadConfig(const char *filename)
+		{
+			auto clientConfig = std::make_shared<ClientConfig>();
+			
+			prom_init_config();
+			io_init_config();
+			ppc_cpu_init_config();
+			debugger_init_config();
+			
+			clientConfig->Load(filename);
+			return clientConfig;
+		}
+
+		void initClient(const std::shared_ptr<ClientConfig>& clientConfig)
+		{
+			gcard_init_modes();
+			gcard_add_characteristic(clientConfig->getDisplayConfig());
+			
+			/*
+			 *	begin hardware init
+			 */
+			
+			if (!ppc_init_physical_memory(clientConfig->getMemorySize())) {
+				throw MsgException("cannot initialize memory.");
+			}
+			if (!ppc_cpu_init()) {
+				throw MsgException("cpu_init failed! Out of memory?");
+			}
+			
+			cuda_pre_init();
+			
+			initUI(APPNAME " " APPVERSION, *clientConfig);
+			
+			io_init();
+			
+			gcard_init_host_modes();
+			gcard_set_mode(clientConfig->getDisplayConfig());
+			
+			if (clientConfig->getFullScreen()) gDisplay->setFullscreenMode(true);
+			
+			MemMapFile font(ppc_font, sizeof ppc_font);
+			// FIXME: ..
+			if (gDisplay->mClientChar.height >= 600) {
+				int width = (gDisplay->mClientChar.width-40)/8;
+				int height = (gDisplay->mClientChar.height-170)/15;
+				if (!gDisplay->openVT(width, height, (gDisplay->mClientChar.width-width*8)/2, 150, font)) {
+					throw MsgException("Can't open virtual terminal.");
+				}
+			} else {
+				if (!gDisplay->openVT(77, 25, 12, 100, font)) {
+					throw MsgException("Can't open virtual terminal.");
+				}
+			}
+			
+			initMenu();
+			drawLogo();
+			
+			// now gDisplay->printf works
+			gDisplay->printf("CPU: PVR=%08x\n", ppc_cpu_get_pvr(0));
+			gDisplay->printf("%d MiB RAM\n", ppc_get_memory_size() / (1024*1024));
+			
+			tests();
+			
+			// initialize initial paging (for prom)
+			uint32 PAGE_TABLE_ADDR = gConfig->getConfigInt("page_table_pa");
+			gDisplay->printf("initializing initial page table at %08x\n", PAGE_TABLE_ADDR);
+			
+			// 256 Kbytes Pagetable, 2^15 Pages, 2^12 PTEGs
+			if (!ppc_prom_set_sdr1(PAGE_TABLE_ADDR+0x03, false)) {
+				throw MsgException("internal error setting sdr1.");
+			}
+			
+			// clear pagetable
+			if (!ppc_dma_set(PAGE_TABLE_ADDR, 0, 256*1024)) {
+				throw MsgException("cannot access page table.");
+			}
+			
+			// init prom
+			prom_init();
+			
+			// lock pagetable
+			for (uint32 pa = PAGE_TABLE_ADDR; pa < (PAGE_TABLE_ADDR + 256*1024); pa += 4096) {
+				if (!prom_claim_page(pa)) {
+					throw MsgException("cannot claim page table memory.");
+				}
+			}
+			
+			testforth();
+			
+			gDisplay->print("now starting client...");
+			gDisplay->setAnsiColor(VCP(VC_WHITE, CONSOLE_BG));
+		}
+
+		std::shared_ptr<ClientCPUState> startCPU(const std::shared_ptr<ClientConfig>& clientConfig)
+		{
+			auto state = std::make_shared<ClientCPUState>();
+			state->m_cpu_running = true;
+			state->m_thread = start_cpu_thread(state, clientConfig);
+			return state;
+		}
+		
+		bool isCPURunning(const std::shared_ptr<ClientCPUState>& state)
+		{
+			return state->m_cpu_running;
+		}
+		
+		void waitForCPU(const std::shared_ptr<ClientCPUState>& state)
+		{
+			state->m_thread.join();
+		}
+		
 	}
-
-	ppc_cpu_map_framebuffer(IO_GCARD_FRAMEBUFFER_PA_START, IO_GCARD_FRAMEBUFFER_EA);
-	ppc_cpu_run();
-
-	running = false;
 }
 
-std::thread start_cpu_thread(std::atomic_bool& running, const String &prom_loadfile)
-{
-	return std::thread(cpu_thread, std::ref(running), std::cref(prom_loadfile));
-}
-
-#if defined(__APPLE__) && defined(PEARPC_UI_SDL)
-// SDL 1.2.15 has to run its main before handing off to SDL_main
+#if !defined(PEARPC_UI_PROVIDES_MAIN)
+#if defined(PEARPC_UI_SDL) && defined(__APPLE__)
+// On macOS SDL 1.2.15 has to run its main before handing off to SDL_main
 extern "C" int SDL_main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
 #endif
-{	
+{
 	if (argc != 2) {
 		usage();
 	}
@@ -244,28 +371,10 @@ int main(int argc, char *argv[])
 	if (!initData()) return 4;
 	if (!initOSAPI()) return 5;
 	try {
-		gConfig = new ConfigParser();
-		gConfig->acceptConfigEntryStringDef("ppc_start_resolution", "800x600x15");
-		gConfig->acceptConfigEntryIntDef("ppc_start_full_screen", 0);
-		gConfig->acceptConfigEntryIntDef("memory_size", 128*1024*1024);
-		gConfig->acceptConfigEntryIntDef("page_table_pa", 0x00300000);
-		gConfig->acceptConfigEntryIntDef("redraw_interval_msec", 20);
-		gConfig->acceptConfigEntryStringDef("key_compose_dialog", "F11");
-		gConfig->acceptConfigEntryStringDef("key_change_cd_0", "none");
-		gConfig->acceptConfigEntryStringDef("key_change_cd_1", "none");
-		gConfig->acceptConfigEntryStringDef("key_toggle_mouse_grab", "F12");
-		gConfig->acceptConfigEntryStringDef("key_toggle_full_screen", "Ctrl+Alt+Return");
-
-		prom_init_config();
-		io_init_config();
-		ppc_cpu_init_config();
-		debugger_init_config();
-
+		std::shared_ptr<ClientConfig> clientConfig;
+		
 		try {
-			LocalFile *config;
-			config = new LocalFile(argv[1]);
-			gConfig->loadConfig(*config);
-			delete config;
+			clientConfig = main::loadConfig(argv[1]);
 		} catch (const Exception &e) {
 			String res;
 			e.reason(res);
@@ -287,172 +396,20 @@ int main(int argc, char *argv[])
 			"along with this program; if not, write to the Free Software\n"
 			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA\n\n");
 
-
-		if (gConfig->getConfigInt("memory_size") < 64*1024*1024) {
-			ht_printf("%s: 'memory_size' must be >= 64MB.", argv[1]);
-			exit(1);
-		}
-		int msec = gConfig->getConfigInt("redraw_interval_msec");
-		if (msec < 10 || msec > 500) {
-			ht_printf("%s: 'redraw_interval_msec' must be between 10 and 500 (inclusive).", argv[1]);
-			exit(1);
-		}
-
-		String key_compose_dialog_string;
-		String key_toggle_mouse_grab_string;
-		String key_toggle_full_screen_string;
-		KeyboardCharacteristics keyConfig;
-		gConfig->getConfigString("key_compose_dialog", key_compose_dialog_string);		
-		gConfig->getConfigString("key_toggle_mouse_grab", key_toggle_mouse_grab_string);
-		gConfig->getConfigString("key_toggle_full_screen", key_toggle_full_screen_string);
-		if (!SystemKeyboard::convertStringToKeycode(keyConfig.key_compose_dialog, key_compose_dialog_string)) {
-			ht_printf("%s: invalid '%s'\n", argv[1], "key_compose_dialog");
-			exit(1);
-		}
-		if (!SystemKeyboard::convertStringToKeycode(keyConfig.key_toggle_mouse_grab, key_toggle_mouse_grab_string)) {
-			ht_printf("%s: invalid '%s'\n", argv[1], "key_toggle_mouse_grab");
-			exit(1);
-		}
-		if (!SystemKeyboard::convertStringToKeycode(keyConfig.key_toggle_full_screen, key_toggle_full_screen_string)) {
-			ht_printf("%s: invalid '%s'\n", argv[1], "key_toggle_full_screen");
-			exit(1);
-		}
+		main::initClient(clientConfig);
 		
-		
-		gcard_init_modes();
-		
-		String chr;
-		DisplayCharacteristics gm;
-		bool fullscreen;
-		gConfig->getConfigString("ppc_start_resolution", chr);
-		fullscreen = gConfig->getConfigInt("ppc_start_full_screen");
-		if (!displayCharacteristicsFromString(gm, chr)) {
-			ht_printf("%s: invalid '%s'\n", argv[1], "ppc_start_resolution");
-			exit(1);
-		}
-		switch (gm.bytesPerPixel) {
-		/*
-		 *	Are we confusing bytesPerPixel with bitsPerPixel?
-		 *	Yes! And I am proud of it!
-		 */
-		case 15:
-			gm.bytesPerPixel = 2;
-			break;
-		case 32:
-			gm.bytesPerPixel = 4;
-			break;
-		default:
-			ht_printf("%s: invalid depth in '%s'\n", argv[1], "ppc_start_resolution");
-			exit(1);
-		}
-		if (!gcard_finish_characteristic(gm)) {
-			ht_printf("%s: invalid '%s'\n", argv[1], "ppc_start_resolution");
-			exit(1);
-		}
-		gcard_add_characteristic(gm);
-
-
-		/*
-		 *	begin hardware init
-		 */
-
-		if (!ppc_init_physical_memory(gConfig->getConfigInt("memory_size"))) {
-			ht_printf("cannot initialize memory.\n");
-			exit(1);
-		}
-		if (!ppc_cpu_init()) {
-			ht_printf("cpu_init failed! Out of memory?\n");
-			exit(1);
-		}
-
-		cuda_pre_init();
-
-		initUI(APPNAME " " APPVERSION, gm, msec, keyConfig, fullscreen);
-
-		io_init();
-
-		gcard_init_host_modes();
-		gcard_set_mode(gm);
-
-		if (fullscreen) gDisplay->setFullscreenMode(true);
-
-		MemMapFile font(ppc_font, sizeof ppc_font);
-		// FIXME: ..
-		if (gDisplay->mClientChar.height >= 600) {
-			int width = (gDisplay->mClientChar.width-40)/8;
-			int height = (gDisplay->mClientChar.height-170)/15;
-			if (!gDisplay->openVT(width, height, (gDisplay->mClientChar.width-width*8)/2, 150, font)) {
-				ht_printf("Can't open virtual terminal.\n");
-				exit(1);
-			}
-		} else {
-			if (!gDisplay->openVT(77, 25, 12, 100, font)) {
-				ht_printf("Can't open virtual terminal.\n");
-				exit(1);
-			}
-		}
-
-		initMenu();
-		drawLogo();
-
-		// now gDisplay->printf works
-		gDisplay->printf("CPU: PVR=%08x\n", ppc_cpu_get_pvr(0));
-		gDisplay->printf("%d MiB RAM\n", ppc_get_memory_size() / (1024*1024));
-
-		tests();
-
-		// initialize initial paging (for prom)
-		uint32 PAGE_TABLE_ADDR = gConfig->getConfigInt("page_table_pa");
-		gDisplay->printf("initializing initial page table at %08x\n", PAGE_TABLE_ADDR);
-
- 		// 256 Kbytes Pagetable, 2^15 Pages, 2^12 PTEGs
-		if (!ppc_prom_set_sdr1(PAGE_TABLE_ADDR+0x03, false)) {
-			ht_printf("internal error setting sdr1.\n");
-			return 1;
-		}		
-		
-		// clear pagetable
-		if (!ppc_dma_set(PAGE_TABLE_ADDR, 0, 256*1024)) {
-			ht_printf("cannot access page table.\n");
-			return 1;
-		}
-
-		// init prom
-		prom_init();
-		
-		// lock pagetable
-		for (uint32 pa = PAGE_TABLE_ADDR; pa < (PAGE_TABLE_ADDR + 256*1024); pa += 4096) {
-			if (!prom_claim_page(pa)) {
-				ht_printf("cannot claim page table memory.\n");
-				exit(1);
-			}
-		}
-
-		testforth();
-
-		String prom_loadfile;
-		if (gConfig->haveKey("prom_loadfile"))
-		{
-			gConfig->getConfigString("prom_loadfile", prom_loadfile);
-		}
+		// begin cpu execution on a new thread
+		auto cpuThreadState = main::startCPU(clientConfig);
 
 		// this was your last chance to visit the config..
-		delete gConfig;
-		gConfig = NULL;
+		clientConfig.reset();
 
-		gDisplay->print("now starting client...");
-		gDisplay->setAnsiColor(VCP(VC_WHITE, CONSOLE_BG));
-
-		// begin cpu execution on a new thread
-		std::atomic_bool cpu_running(true);
-		auto cpu_thread = start_cpu_thread(cpu_running, prom_loadfile);
-
-		mainLoopUI([&cpu_running] () -> bool {
-			return !cpu_running;
+		mainLoopUI([&cpuThreadState] () -> bool {
+			return !main::isCPURunning(cpuThreadState);
 		});
 
 		// wait for cpu thread to complete
-		cpu_thread.join();
+		main::waitForCPU(cpuThreadState);
 
 		io_done();
 
@@ -472,3 +429,4 @@ int main(int argc, char *argv[])
 	doneAtom();
 	return 0;
 }
+#endif

@@ -88,6 +88,7 @@ add_subdirectory(io)
 
 set(all_srcs
     main.cc
+    main.h
     info.h
     ppc_img.c
     ppc_img.h
@@ -97,6 +98,8 @@ set(all_srcs
     ppc_button_changecd.h
     configparser.cc
     configparser.h
+    clientconfig.cc
+    clientconfig.h
 )
 
 set(target ppc)
