@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
+#include <algorithm>
 
 #include "system/systimer.h"
 #include "tools/snprintf.h"
@@ -214,7 +215,7 @@ void sys_set_timer(sys_timer t, time_t secs, long int nanosecs, bool periodic)
 	struct itimerval itime;
 
 	itime.it_value.tv_sec = secs;
-	itime.it_value.tv_usec = (nanosecs + 500) / 1000;
+	itime.it_value.tv_usec = std::max<suseconds_t>(1, (nanosecs + 500) / 1000);
 
 	if (periodic) {
 		itime.it_interval = itime.it_value;
