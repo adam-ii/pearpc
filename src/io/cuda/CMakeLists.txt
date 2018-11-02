@@ -6,3 +6,7 @@ set(all_srcs
 )
 
 add_library(${target} ${all_srcs})
+
+target_link_libraries(${target}
+    qemu
+)

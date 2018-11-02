@@ -84,6 +84,7 @@ add_subdirectory(tools)
 add_subdirectory(debug)
 add_subdirectory(system)
 add_subdirectory(cpu)
+add_subdirectory(qemu)
 add_subdirectory(io)
 
 set(all_srcs
@@ -134,6 +135,17 @@ if (${PEARPC_UI} STREQUAL "macos")
     )
 endif()
 
+# Force loading of static type_init() from qemu library
+set(WHOLE_ARCHIVE_ON "")
+set(WHOLE_ARCHIVE_OFF "")
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(WHOLE_ARCHIVE_ON -Wl,-whole-archive)
+    set(WHOLE_ARCHIVE_OFF -Wl,-no-whole-archive)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(WHOLE_ARCHIVE_ON -Wl,-force_load)
+endif()
+
 target_link_libraries(${target}
     system_arch
     cpu
@@ -152,6 +164,7 @@ target_link_libraries(${target}
     io_usb
     io_serial
     io
+    ${WHOLE_ARCHIVE_ON} qemu ${WHOLE_ARCHIVE_OFF}
     cpu
     cpu_common
     tools

@@ -1,6 +1,5 @@
 .deps
 Makefile
 Makefile.in
-ppc
 *.o
 *.a
