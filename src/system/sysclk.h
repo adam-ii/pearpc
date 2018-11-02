@@ -36,4 +36,9 @@ uint64 sys_get_hiresclk_ticks();
  */
 uint64 sys_get_hiresclk_ticks_per_second();
 
+/**
+ * Get elapsed time of the machine in nanoseconds
+ */
+uint64 sys_get_elapsed_ns();
+
 #endif /* _SYSCLK_H_ */
