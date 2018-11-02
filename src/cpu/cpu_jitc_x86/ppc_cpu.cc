@@ -124,6 +124,8 @@ void ppc_cpu_run()
 		exit(1);
 	}
 	ppc_start_jitc_asm(gCPU.pc);
+	
+	sys_delete_timer(gDECtimer);
 }
 
 void ppc_cpu_map_framebuffer(uint32 pa, uint32 ea)

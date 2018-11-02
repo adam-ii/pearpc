@@ -139,6 +139,8 @@ void ppc_cpu_run()
 	ht_printf("*** &gCPU: %p, &gJITC: %p\n", gCPU, gCPU->jitc);
 	ht_printf("sizeof cpu: %d\n", int(sizeof(*gCPU)));
 	ppc_start_jitc_asm(gCPU->pc, &gCPU, sizeof *gCPU);
+	
+	sys_delete_timer(gDECtimer);
 }
 
 void ppc_cpu_map_framebuffer(uint32 pa, uint32 ea)
