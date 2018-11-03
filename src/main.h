@@ -28,8 +28,6 @@
 namespace pearpc {
 	namespace main {
 		
-		struct ClientCPUState;
-		
 		/// Load named configuration file
 		std::shared_ptr<ClientConfig> loadConfig(const char *filename);
 		
@@ -40,13 +38,13 @@ namespace pearpc {
 		void doneClient();
 		
 		/// Start client CPU
-		std::shared_ptr<ClientCPUState> startCPU(const std::shared_ptr<ClientConfig>& clientConfig);
-		
+		void startCPU(const std::shared_ptr<ClientConfig>& clientConfig);
+
 		/// Returns true if client CPU is running
-		bool isCPURunning(const std::shared_ptr<ClientCPUState>& state);
-		
+		bool isCPURunning();
+
 		/// Wait for client CPU to terminate
-		void waitForCPU(const std::shared_ptr<ClientCPUState>& state);
+		void waitForCPU();
 		
 	}
 }

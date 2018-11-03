@@ -45,6 +45,7 @@
 #include "system/mouse.h"
 #include "system/keyboard.h"
 #include "system/sys.h"
+#include "system/timer.h"
 #include "clientconfig.h"
 #include "main.h"
 
@@ -223,6 +224,8 @@ namespace pearpc {
 
 		void initClient(const std::shared_ptr<ClientConfig>& clientConfig, const std::function<void (const char*)>& funcInitUI)
 		{
+			initTimer();
+			
 			gcard_init_modes();
 			gcard_add_characteristic(clientConfig->getDisplayConfig());
 			
@@ -307,6 +310,7 @@ namespace pearpc {
 		{
 			io_done();
 			doneUI();
+			doneTimer();
 		}
 
 		void startCPU(const std::shared_ptr<ClientConfig>& clientConfig)

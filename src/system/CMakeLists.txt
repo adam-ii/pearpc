@@ -34,6 +34,8 @@ set(all_srcs
     sysvaccel.h
     syscdrom.h
     sysvm.h
+    timer.cc
+    timer.h
 )
 
 add_library(${target} ${all_srcs})

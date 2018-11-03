@@ -94,6 +94,8 @@
 #define IO_SERIAL_ERR(msg...) {ht_printf("[IO/SERIAL] <Error> " msg);exit(1); }
 #define IO_CORE_ERR(msg...) {ht_printf("[IO/Generic] <Error> " msg);exit(1); }
 
+//#define SYS_TIMER_TRACE(msg...) ht_printf("[SYS/Timer] " msg)
+
 /*
  *
  */
@@ -191,6 +193,10 @@
 
 #ifndef IO_RTL8139_TRACE
 #define IO_RTL8139_TRACE(msg...)
+#endif
+
+#ifndef SYS_TIMER_TRACE
+#define SYS_TIMER_TRACE(msg...) {}
 #endif
 
 #endif
