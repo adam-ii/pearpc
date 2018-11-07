@@ -20,17 +20,29 @@
  */
 
 #include <cstdlib>
+#include <cassert>
 
 #include "system/systhread.h"
 #include "sysx11.h"
 
 #include "system/display.h"
 #include "system/keyboard.h"
+#include "tools/snprintf.h"
+
+extern "C" {
+	#include "x_keymap.h"
+}
 
 namespace pearpc {
 
 class X11SystemKeyboard: public SystemKeyboard {
 public:
+	X11SystemKeyboard()
+	{
+		assert(gX11Display);
+		m_x11_to_qkeycode_map = qemu_xkeymap_mapping_table(gX11Display, &m_x11_to_qkeycode_len);
+	}
+
 	virtual int getKeybLEDs()
 	{
 		return 0;
@@ -44,6 +56,19 @@ public:
 	{
 		return SystemKeyboard::handleEvent(ev);
 	}
+
+	QKeyCode convertKeycodeToQKeyCode(int keycode)
+	{
+		if (m_x11_to_qkeycode_len <= keycode) {
+			ht_printf("<Warning> unknown keycode 0x%x\n", keycode);
+			return Q_KEY_CODE_UNMAPPED;
+		}
+		return static_cast<QKeyCode>(m_x11_to_qkeycode_map[keycode]);
+	}
+
+private:
+	const uint16_t *m_x11_to_qkeycode_map;
+	size_t m_x11_to_qkeycode_len;
 };
 
 SystemKeyboard *allocSystemKeyboard()

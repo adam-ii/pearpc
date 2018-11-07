@@ -1446,16 +1446,16 @@ bool prom_user_boot_partition(File *&ret_file, uint32 &size, bool &direct, uint3
 	read_partitions(brs, true);
 	char key2digit[256];
 	for (int i=0; i<256; i++) key2digit[i] = -1;
-	key2digit[KEY_0] = 0;
-	key2digit[KEY_1] = 1;
-	key2digit[KEY_2] = 2;
-	key2digit[KEY_3] = 3;
-	key2digit[KEY_4] = 4;
-	key2digit[KEY_5] = 5;
-	key2digit[KEY_6] = 6;
-	key2digit[KEY_7] = 7;
-	key2digit[KEY_8] = 8;
-	key2digit[KEY_9] = 9;
+	key2digit[Q_KEY_CODE_0] = 0;
+	key2digit[Q_KEY_CODE_1] = 1;
+	key2digit[Q_KEY_CODE_2] = 2;
+	key2digit[Q_KEY_CODE_3] = 3;
+	key2digit[Q_KEY_CODE_4] = 4;
+	key2digit[Q_KEY_CODE_5] = 5;
+	key2digit[Q_KEY_CODE_6] = 6;
+	key2digit[Q_KEY_CODE_7] = 7;
+	key2digit[Q_KEY_CODE_8] = 8;
+	key2digit[Q_KEY_CODE_9] = 9;
 
 	bool only_bootable = true;
 
@@ -1484,9 +1484,9 @@ bool prom_user_boot_partition(File *&ret_file, uint32 &size, bool &direct, uint3
 					while (!cuda_prom_get_key(keycode)) sys_suspend();
 				} while (keycode & 0x80);
 
-				if (keycode == KEY_DELETE) choice = 0; else
-				if (keycode == KEY_RETURN) break; else
-				if (keycode == KEY_ESCAPE) return false;
+				if (keycode == Q_KEY_CODE_DELETE) choice = 0; else
+				if (keycode == Q_KEY_CODE_RET) break; else
+				if (keycode == Q_KEY_CODE_ESC) return false;
 
 				if ((keycode<256) && (key2digit[keycode]>=0)) {
 					choice *= 10;

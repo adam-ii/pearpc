@@ -25,6 +25,10 @@
 
 #include "system/display.h"
 #include "system/keyboard.h"
+#include "tools/snprintf.h"
+
+extern "C" const uint16_t sdl_to_qcode_map[];
+extern "C" const size_t sdl_to_qcode_map_len;
 
 namespace pearpc {
 
@@ -73,6 +77,16 @@ public:
 	{
 		return SystemKeyboard::handleEvent(ev);
 	}
+
+	QKeyCode convertKeycodeToQKeyCode(int keycode)
+	{
+		if (sdl_to_qcode_map_len <= keycode) {
+			ht_printf("<Warning> unknown keycode 0x%x\n", keycode);
+			return Q_KEY_CODE_UNMAPPED;
+		}
+		return static_cast<QKeyCode>(sdl_to_qcode_map[keycode]);
+	}
+
 };
 
 SystemKeyboard *allocSystemKeyboard()

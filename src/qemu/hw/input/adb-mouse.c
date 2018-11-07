@@ -260,8 +260,8 @@ static const TypeInfo adb_mouse_type_info = {
     .parent = TYPE_ADB_DEVICE,
     .instance_size = sizeof(MouseState),
     .instance_init = adb_mouse_initfn,
-    .class_init = adb_mouse_class_init,
     .class_size = sizeof(ADBMouseClass),
+    .class_init = adb_mouse_class_init,
 };
 
 static void adb_mouse_register_types(void)

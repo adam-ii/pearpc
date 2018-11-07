@@ -31,6 +31,7 @@
 
 #import <MetalKit/MetalKit.h>
 #import <thread>
+#import <bitset>
 
 using namespace pearpc;
 
@@ -49,7 +50,6 @@ namespace
 		ev.mouse.button1 = (pressedMouseButtons & (1 << 0)) != 0;
 		ev.mouse.button2 = (pressedMouseButtons & (1 << 1)) != 0;;
 		ev.mouse.button3 = false;
-		ev.mouse.dbutton = 0;
 		ev.mouse.x = viewLoc.x;
 		ev.mouse.y = viewLoc.y;
 		ev.mouse.relx = event.deltaX;
@@ -100,6 +100,8 @@ namespace
 												  return event;
 											  }
 										  }];
+	
+	self.modifierFlags = [NSEvent modifierFlags];
 }
 
 - (void)viewWillAppear {
@@ -227,7 +229,7 @@ namespace
 - (void)keyDown:(NSEvent *)event {
 	if (gKeyboard) {
 		SystemEvent ev;
-		ev.key.keycode = event.keyCode;
+		ev.key.qkeycode = gKeyboard->convertKeycodeToQKeyCode(event.keyCode);
 		ev.type = sysevKey;
 		ev.key.pressed = true;
 		gKeyboard->handleEvent(ev);
@@ -237,7 +239,7 @@ namespace
 - (void)keyUp:(NSEvent *)event {
 	if (gKeyboard) {
 		SystemEvent ev;
-		ev.key.keycode = event.keyCode;
+		ev.key.qkeycode = gKeyboard->convertKeycodeToQKeyCode(event.keyCode);
 		ev.type = sysevKey;
 		ev.key.pressed = false;
 		gKeyboard->handleEvent(ev);
@@ -250,29 +252,15 @@ namespace
 	if (gKeyboard) {
 		const NSEventModifierFlags prev = self.modifierFlags;
 		
-		struct ModifierKeyMap {
-			NSEventModifierFlags flag;
-			uint code;
-		};
+		// If more bits are set than last time, interpret this as a key down
+		const auto prevSet = std::bitset<sizeof(NSEventModifierFlags) * 8>(prev).count();
+		const auto currSet = std::bitset<sizeof(NSEventModifierFlags) * 8>(curr).count();
 		
-		const ModifierKeyMap keys[] = {
-			{ NSEventModifierFlagCapsLock, KEY_CAPS_LOCK },
-			{ NSEventModifierFlagShift, KEY_SHIFT },
-			{ NSEventModifierFlagControl, KEY_CONTROL },
-			{ NSEventModifierFlagOption, KEY_ALTGR },
-			{ NSEventModifierFlagCommand, KEY_ALT },
-			{ NSEventModifierFlagFunction, 63 },
-		};
-		
-		for (const auto key : keys) {
-			if ((curr & key.flag) != (prev & key.flag)) {
-				SystemEvent ev;
-				ev.key.keycode = key.code;
-				ev.type = sysevKey;
-				ev.key.pressed = (curr & key.flag) != 0;
-				gKeyboard->handleEvent(ev);
-			}
-		}
+		SystemEvent ev;
+		ev.key.qkeycode = gKeyboard->convertKeycodeToQKeyCode(event.keyCode);
+		ev.type = sysevKey;
+		ev.key.pressed = currSet > prevSet;
+		gKeyboard->handleEvent(ev);
 	}
 	
 	self.modifierFlags = curr;

@@ -484,7 +484,7 @@ void BeOSSystemDisplay::updateTitle()
 {
 	String key;
 	int key_toggle_mouse_grab = gKeyboard->getKeyConfig().key_toggle_mouse_grab;
-	SystemKeyboard::convertKeycodeToString(key, key_toggle_mouse_grab);
+	SystemKeyboard::convertKeyBindingToString(key, key_toggle_mouse_grab);
 	ht_snprintf(mCurTitle, sizeof mCurTitle, "%s - [%s %s mouse]", mTitle,key.contentChar(), (isMouseGrabbed() ? "disables" : "enables"));
 	window->Lock();
 	window->SetTitle(mCurTitle);

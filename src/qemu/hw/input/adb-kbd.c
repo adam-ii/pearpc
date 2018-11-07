@@ -64,7 +64,11 @@ typedef struct ADBKeyboardClass : public ADBDeviceClass {
 /* The adb keyboard doesn't have every key imaginable */
 #define NO_KEY 0xff
 
-#ifndef PEARPC_SHIM
+#ifdef PEARPC_SHIM
+// Gnu C++ does not support designated initializers in C++ code
+extern "C" const int qcode_to_adb_keycode[];
+extern "C" const size_t qcode_to_adb_keycode_len;
+#else
 int qcode_to_adb_keycode[] = {
      /* Make sure future additions are automatically set to NO_KEY */
     [0 ... 0xff]               = NO_KEY,
@@ -321,12 +325,12 @@ static void adb_keyboard_event(DeviceState *dev, QemuConsole *src,
     KBDState *s = (KBDState *)dev;
     int qcode, keycode;
 
-    #ifdef PEARPC_SHIM
-    // Key codes are passed in as ADB codes
-    keycode = evt->u.key.data->key->u.number.data;
-    #else
     qcode = qemu_input_key_value_to_qcode(evt->u.key.data->key);
+    #ifdef PEARPC_SHIM
+    if (qcode >= qcode_to_adb_keycode_len) {
+    #else
     if (qcode >= ARRAY_SIZE(qcode_to_adb_keycode)) {
+    #endif
         return;
     }
     /* FIXME: take handler into account when translating qcode */
@@ -335,7 +339,6 @@ static void adb_keyboard_event(DeviceState *dev, QemuConsole *src,
         trace_adb_kbd_no_key();
         return;
     }
-    #endif
     if (evt->u.key.data->down == false) { /* if key release event */
         keycode = keycode | 0x80;   /* create keyboard break code */
     }
@@ -412,8 +415,8 @@ static const TypeInfo adb_kbd_type_info = {
     .parent = TYPE_ADB_DEVICE,
     .instance_size = sizeof(KBDState),
     .instance_init = adb_kbd_initfn,
-    .class_init = adb_kbd_class_init,
     .class_size = sizeof(ADBKeyboardClass),
+    .class_init = adb_kbd_class_init,
 };
 
 static void adb_kbd_register_types(void)

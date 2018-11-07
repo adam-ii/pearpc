@@ -22,6 +22,7 @@
 #define __SYSTEM_EVENT_H__
 
 #include "system/types.h"
+#include "system/qkeycode.h"
 #include "tools/data.h"
 
 namespace pearpc {
@@ -41,20 +42,19 @@ enum SystemMouseEventType {
 struct SystemEvent {
 	SystemEventType type;
 	union {
-    		struct {
+		struct {
 			SystemMouseEventType type;
 			int x;
-		    	int y;
+			int y;
 			int relx;
-		    	int rely;
+			int rely;
 			bool button1;	// left mouse button
 			bool button2;	// right mouse button
 			bool button3;	// middle mouse button
-			int  dbutton;	// mouse button that changed since last sysevMouse (0 if none)
 		} mouse;
 		struct {
-			uint keycode;
-		    	bool pressed;
+			QKeyCode qkeycode;
+			bool pressed;
 			char chr;
 		} key;
 	};

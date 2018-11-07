@@ -50,7 +50,9 @@ namespace pearpc {
 	class MacSystemKeyboard: public SystemKeyboard {
 	public:
 		virtual int getKeybLEDs();
-		void setKeybLEDs(int leds);
+		virtual void setKeybLEDs(int leds);
+		
+		virtual QKeyCode convertKeycodeToQKeyCode(int keycode);
 	};
 	
 	class MacSystemMouse: public SystemMouse {

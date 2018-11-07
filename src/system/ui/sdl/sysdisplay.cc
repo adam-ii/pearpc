@@ -106,8 +106,8 @@ void SDLSystemDisplay::finishMenu()
 void SDLSystemDisplay::updateTitle() 
 {
 	String key;
-	int key_toggle_mouse_grab = gKeyboard->getKeyConfig().key_toggle_mouse_grab;
-	SystemKeyboard::convertKeycodeToString(key, key_toggle_mouse_grab);
+	auto key_toggle_mouse_grab = gKeyboard->getKeyConfig().key_toggle_mouse_grab;
+	SystemKeyboard::convertKeyBindingToString(key, key_toggle_mouse_grab);
 	String curTitle;
 	curTitle.assignFormat("%s - [%s %s mouse]", mTitle, key.contentChar(), (isMouseGrabbed() ? "disables" : "enables"));
 	SDL_WM_SetCaption(curTitle.contentChar(), NULL);

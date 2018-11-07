@@ -32,7 +32,6 @@
 #include "hw/qdev.h"
 #include "ui/console.h"
 
-// From {build dir}/qapi/qapi-types-ui.h
 typedef enum InputEventKind {
 	INPUT_EVENT_KIND_KEY = 0,
 	INPUT_EVENT_KIND_BTN = 1,
@@ -42,18 +41,17 @@ typedef enum InputEventKind {
 } InputEventKind;
 
 typedef enum KeyValueKind {
-	KEY_VALUE_KIND_NUMBER = 0,
 	KEY_VALUE_KIND_QCODE = 1,
-	KEY_VALUE_KIND__MAX = 2,
 } KeyValueKind;
 
-struct q_obj_int_wrapper {
-	int64_t data;
+struct q_obj_QKeyCode_wrapper {
+	QKeyCode data;
 };
+
 struct KeyValue {
 	KeyValueKind type;
 	union {
-		q_obj_int_wrapper number;
+		q_obj_QKeyCode_wrapper qcode;
 	} u;
 };
 
@@ -90,5 +88,16 @@ struct QemuInputHandler {
 
 struct QemuInputHandlerState *qemu_input_handler_register(DeviceState *dev,
 												   QemuInputHandler *handler);
+
+int qemu_input_key_value_to_qcode(const KeyValue *value);
+
+
+// C++ extensions
+namespace qemu {
+
+	// Convert the native system_ui keycode to a QKeyCode
+	QKeyCode nativeToQKeyCode(int keycode);
+	
+}
 
 #endif

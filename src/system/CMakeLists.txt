@@ -25,6 +25,8 @@ set(all_srcs
     sysfeatures.h
     keyboard.cc
     keyboard.h
+    qkeycode.cc
+    qkeycode.h
     mouse.cc
     mouse.h
     event.h

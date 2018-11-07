@@ -35,13 +35,13 @@ namespace pearpc {
 		config.getConfigString("key_toggle_mouse_grab", key_toggle_mouse_grab_string);
 		config.getConfigString("key_toggle_full_screen", key_toggle_full_screen_string);
 		
-		if (!SystemKeyboard::convertStringToKeycode(keyConfig.key_compose_dialog, key_compose_dialog_string)) {
+		if (!SystemKeyboard::convertStringToKeyBinding(keyConfig.key_compose_dialog, key_compose_dialog_string)) {
 			throw MsgfException("Invalid '%s'", "key_compose_dialog");
 		}
-		if (!SystemKeyboard::convertStringToKeycode(keyConfig.key_toggle_mouse_grab, key_toggle_mouse_grab_string)) {
+		if (!SystemKeyboard::convertStringToKeyBinding(keyConfig.key_toggle_mouse_grab, key_toggle_mouse_grab_string)) {
 			throw MsgfException("Invalid '%s'", "key_toggle_mouse_grab");
 		}
-		if (!SystemKeyboard::convertStringToKeycode(keyConfig.key_toggle_full_screen, key_toggle_full_screen_string)) {
+		if (!SystemKeyboard::convertStringToKeyBinding(keyConfig.key_toggle_full_screen, key_toggle_full_screen_string)) {
 			throw MsgfException("Invalid '%s'", "key_toggle_full_screen");
 		}
 		

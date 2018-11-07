@@ -3,6 +3,7 @@ set(target system_ui)
 set(all_srcs
     main.m
     gui.cc
+    syskeyboard.cc
     sysmacos.h
     sysmacos.mm
     rendermetal.h

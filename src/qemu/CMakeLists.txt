@@ -5,7 +5,7 @@ function(create_qemu_group _srcs_var _path)
 
     file(GLOB_RECURSE qemu_srcs ${_path}/*.c)
     file(GLOB_RECURSE qemu_hdrs include/${_path}/*.h ${_path}/*.h)
-    file(GLOB_RECURSE shim_srcs pearpc-shim/${_path}/*.cc)
+    file(GLOB_RECURSE shim_srcs pearpc-shim/${_path}/*.cc pearpc-shim/${_path}/*.c)
     file(GLOB_RECURSE shim_hdrs pearpc-shim/include/${_path}/*.h pearpc-shim/${_path}/*.h)
 
     source_group("${_path}"
@@ -59,6 +59,12 @@ target_compile_definitions(${target}
         PEARPC_SHIM
         $<$<STREQUAL:${OSAPI_DIR},posix>:CONFIG_POSIX>
         CONFIG_INT128
+)
+
+target_compile_options(${target}
+    PRIVATE
+        $<$<STREQUAL:$<CXX_COMPILER_ID>,Clang>:-Wno-initializer-overrides>
+        $<$<STREQUAL:$<CXX_COMPILER_ID>,AppleClang>:-Wno-initializer-overrides>
 )
 
 target_include_directories(${target}

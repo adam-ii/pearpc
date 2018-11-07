@@ -77,8 +77,8 @@ namespace {
 			case pearpc::sysevKey:
 			{
 				KeyValue qemuKey;
-				qemuKey.type = KEY_VALUE_KIND_NUMBER;
-				qemuKey.u.number.data = ev.key.keycode;
+				qemuKey.type = KEY_VALUE_KIND_QCODE;
+				qemuKey.u.qcode.data = ev.key.qkeycode;
 				
 				InputKeyEvent qemuKeyEvent;
 				qemuKeyEvent.down = ev.key.pressed;
@@ -132,11 +132,14 @@ QEMUPutMouseEntry *qemu_add_mouse_event_handler(QEMUPutMouseEvent *func,
 }
 
 QemuInputHandlerState *qemu_input_handler_register(DeviceState *dev,
-												   QemuInputHandler *handler)
-{
+												   QemuInputHandler *handler) {
 	auto s = std::make_shared<QemuInputHandlerState>();
 	s->dev = dev;
 	s->handler = handler;
 	addKeyboardHandler(s);
 	return s.get();
+}
+
+int qemu_input_key_value_to_qcode(const KeyValue *value) {
+	return value->u.qcode.data;
 }
