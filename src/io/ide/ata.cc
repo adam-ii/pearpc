@@ -26,8 +26,12 @@
 #include "ata.h"
 
 #include "tools/snprintf.h"
+#include "tools/profiling.h"
+#include "system/sysclk.h"
 
 namespace pearpc {
+
+using profiling::getMetrics;
 
 ATADevice::ATADevice(const char *name)
 	: IDEDevice(name)
@@ -88,17 +92,21 @@ ATADeviceFile::~ATADeviceFile()
 
 bool ATADeviceFile::seek(uint64 blockno)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().ideTime);
 	sys_fseek(mFile, 512 * (uint64)blockno);
 	return true;
 }
 
 void ATADeviceFile::flush()
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().ideTime);
 	sys_flush(mFile);
 }
 
 int ATADeviceFile::readBlock(byte *buf)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().ideTime);
+
 	sys_fread(mFile, buf, 512);
 	if (mMode & ATA_DEVICE_MODE_ECC) {
 		// add ECC bytes..
@@ -109,17 +117,20 @@ int ATADeviceFile::readBlock(byte *buf)
 
 int ATADeviceFile::writeBlock(byte *buf)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().ideTime);
 	sys_fwrite(mFile, buf, 512);
 	return 0;
 }
 
 bool ATADeviceFile::promSeek(FileOfs pos)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().ideTime);
 	return sys_fseek(mFile, pos) == 0;
 }
 
 uint ATADeviceFile::promRead(byte *buf, uint size)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().ideTime);
 	return sys_fread(mFile, buf, size);
 }
 

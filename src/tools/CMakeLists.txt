@@ -26,6 +26,8 @@ set(all_srcs
     crc32.h
     crc32defs.h
     crc32table.h
+    profiling.cc
+    profiling.h
 )
 
 add_library(${target} ${all_srcs})

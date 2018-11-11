@@ -22,6 +22,7 @@
 #include <cstring>
 
 #include "debug/tracers.h"
+#include "tools/profiling.h"
 #include "system/sys.h"
 #include "system/sysclk.h"
 #include "system/systhread.h"
@@ -33,6 +34,8 @@
 #include "jitc.h"
 #include "jitc_asm.h"
 #include "jitc_debug.h"
+
+using pearpc::profiling::getMetrics;
 
 //static 
 PPC_CPU_State *gCPU;
@@ -88,6 +91,8 @@ sys_semaphore gCPUDozeSem;
 
 extern "C" void cpu_doze()
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().cpuIdleTime);
+	
 	if (!gCPU->exception_pending) {
 //		printf("*doze %08x %08x %d\n", gCPU->dec, ppc_cpu_get_pc(0), blbl);
 		sys_lock_semaphore(gCPUDozeSem);

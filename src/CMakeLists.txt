@@ -7,6 +7,7 @@ set(PEARPC_CPU "generic" CACHE STRING "Select the CPU emulation mode")
 set_property(CACHE PEARPC_CPU PROPERTY STRINGS generic x86 x86_64)
 
 option(PEARPC_JITC_DEBUG "Enable debug and logging of JITC CPU" OFF)
+option(PEARPC_JITC_PROFILING "Enable instrumentation of JITC" OFF)
 
 if (WIN32)
     set(OSAPI_DIR win32)
@@ -21,6 +22,7 @@ add_compile_options(
     -DSYSTEM_ARCH_SPECIFIC_FEATURES_DIR="system/arch/${PEARPC_CPU}/sysfeatures.h"
     -DSYSTEM_OSAPI_SPECIFIC_TYPES_HDR="system/osapi/${OSAPI_DIR}/types.h"
     $<$<BOOL:${PEARPC_JITC_DEBUG}>:-DJITC_DEBUG=1>
+    $<$<BOOL:${PEARPC_JITC_PROFILING}>:-DJITC_PROFILING=1>
 )
 
 include(CheckIncludeFile)

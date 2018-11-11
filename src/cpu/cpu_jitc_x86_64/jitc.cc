@@ -23,9 +23,11 @@
 #include <cassert>
 
 #include "system/sysvm.h"
+#include "system/sysclk.h"
 #include "tools/data.h"
 #include "tools/snprintf.h"
 #include "tools/except.h"
+#include "tools/profiling.h"
 
 #include "jitc.h"
 #include "jitc_debug.h"
@@ -37,6 +39,7 @@
 
 using pearpc::ppc_malloc;
 using pearpc::MsgfException;
+using pearpc::profiling::getMetrics;
 
 static TranslationCacheFragment *jitcAllocFragment(JITC &jitc);
 
@@ -300,6 +303,8 @@ static TranslationCacheFragment *jitcAllocFragment(JITC &jitc)
  */
 static ClientPage *jitcCreateClientPage(JITC &jitc, uint32 baseaddr)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().jitc.createClientPageTime);
+	
 	ClientPage *cp;
 	if (jitc.freeClientPages) {
 		// get page
@@ -367,6 +372,8 @@ extern JITC *gJITC;
 #define U32(dest) (*(uint32 *)(void *)(dest))
 static NativeAddress jitcNewEntrypoint(JITC &jitc, ClientPage *cp, uint32 baseaddr, uint32 ofs)
 {
+	PEARPC_PROFILING_STOPWATCH(getMetrics().jitc.newEntryPointTime);
+	
 /*
 	jitcRunTicks += jitcDebugGetTicks() - jitcRunTicksStart;
 	uint64 jitcCompileStartTicks = jitcDebugGetTicks();
@@ -471,12 +478,15 @@ extern "C" NativeAddress jitcNewPC(JITC &jitc, uint32 entry)
 	ClientPage *cp = jitcGetOrCreateClientPage(jitc, baseaddr);
 	jitcTouchClientPage(jitc, cp);
 	if (!cp->tcf_current) {
+		PEARPC_PROFILING_INCREMENT(getMetrics().jitc.tcfMissCount);
 		return jitcStartTranslation(jitc, cp, baseaddr, entry & 0xfff);
 	} else {
 		NativeAddress ofs = jitcGetEntrypoint(jitc.translationCache, cp, entry & 0xfff);
 		if (ofs) {
+			PEARPC_PROFILING_INCREMENT(getMetrics().jitc.entryPointHitCount);
 			return ofs;
 		} else {
+			PEARPC_PROFILING_INCREMENT(getMetrics().jitc.entryPointMissCount);
 			return jitcNewEntrypoint(jitc, cp, baseaddr, entry & 0xfff);
 		}
 	}

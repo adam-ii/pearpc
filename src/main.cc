@@ -41,6 +41,7 @@
 #include "tools/data.h"
 #include "tools/except.h"
 #include "tools/snprintf.h"
+#include "tools/profiling.h"
 #include "system/display.h"
 #include "system/mouse.h"
 #include "system/keyboard.h"
@@ -209,6 +210,9 @@ extern "C" int SDL_main(int argc, char *argv[])
 namespace pearpc {
 	namespace main {
 		
+		static const auto kMetricsInterval = std::chrono::seconds(2);
+		static Timer s_metricsTimer;
+		
 		std::shared_ptr<ClientConfig> loadConfig(const char *filename)
 		{
 			auto clientConfig = std::make_shared<ClientConfig>();
@@ -304,10 +308,22 @@ namespace pearpc {
 			
 			gDisplay->print("now starting client...");
 			gDisplay->setAnsiColor(VCP(VC_WHITE, CONSOLE_BG));
+			
+			s_metricsTimer = createTimer([] {
+				using namespace profiling;
+				
+				collect(getMetrics());
+				report(getMetrics());
+				modifyTimer(s_metricsTimer, kMetricsInterval);
+			});
+			
+			modifyTimer(s_metricsTimer, kMetricsInterval);
 		}
 		
 		void doneClient()
 		{
+			deleteTimer(s_metricsTimer);
+			
 			io_done();
 			doneUI();
 			doneTimer();
