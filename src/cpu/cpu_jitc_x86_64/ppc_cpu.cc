@@ -20,6 +20,8 @@
 
 #include <cerrno>
 #include <cstring>
+#include <mutex>
+#include <condition_variable>
 
 #include "debug/tracers.h"
 #include "tools/profiling.h"
@@ -87,26 +89,26 @@ uint64 ppc_get_cpu_timebase()
 }
 
 sys_timer gDECtimer;
-sys_semaphore gCPUDozeSem;
+
+std::mutex gCPUDozeMutex;
+std::condition_variable gCPUDozeSignal;
 
 extern "C" void cpu_doze()
 {
 	PEARPC_PROFILING_STOPWATCH(getMetrics().cpuIdleTime);
 	
 	if (!gCPU->exception_pending) {
-//		printf("*doze %08x %08x %d\n", gCPU->dec, ppc_cpu_get_pc(0), blbl);
-		sys_lock_semaphore(gCPUDozeSem);
-		sys_wait_semaphore_bounded(gCPUDozeSem, 10);
-		sys_unlock_semaphore(gCPUDozeSem);
-//	sys_timer_struct *timer = reinterpret_cast<sys_timer_struct *>(gDECtimer);
-
-//		printf("/doze (%d)\n", timer_getoverrun(timer->timer_id));
+		const std::chrono::milliseconds waitTime(10);
+		
+		std::unique_lock<std::mutex> lock(gCPUDozeMutex);
+		gCPUDozeSignal.wait_for(lock, waitTime);
 	}
 }
 
 void ppc_cpu_wakeup()
 {
-	sys_signal_semaphore(gCPUDozeSem);
+	std::lock_guard<std::mutex> lock(gCPUDozeMutex);
+	gCPUDozeSignal.notify_all();
 }
 
 static void decTimerCB(sys_timer t)
@@ -256,8 +258,6 @@ bool ppc_cpu_init()
 	}
 	
 	gCPU->x87cw = 0x37f;
-
-	sys_create_semaphore(&gCPUDozeSem);
 
 	gStartHostCLKTicks = sys_get_hiresclk_ticks();
 	uint64 q = sys_get_hiresclk_ticks_per_second();
