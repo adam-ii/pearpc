@@ -26,6 +26,7 @@
 #import "system/mouse.h"
 #import "cpu/cpu.h"
 #import "tools/except.h"
+#import "keyglyphs.h"
 #import "clientconfig.h"
 #import "main.h"
 
@@ -67,7 +68,14 @@ namespace
 @implementation PearPCViewController
 {
 	std::shared_ptr<RenderMetal> m_renderer;
+	BOOL m_initClient;
+	BOOL m_startCPU;
 	BOOL m_cpuRunning;
+	BOOL m_cursorHide;
+}
+
+- (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -101,33 +109,45 @@ namespace
 											  }
 										  }];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(windowDidResignKey:)
+												 name:NSWindowDidResignKeyNotification
+											   object:nil];
+
 	self.modifierFlags = [NSEvent modifierFlags];
 }
 
 - (void)viewWillAppear {
 	[super viewWillAppear];
 	
-	try {
-		main::initClient(self.clientConfig, [&] (const char* title) {
-			// initUI
-			gDisplay = new MetalSystemDisplay(title, self.clientConfig->getDisplayConfig(), self.clientConfig->getRedrawInterval(), m_renderer);
-			gMouse = new MacSystemMouse();
-			gKeyboard = new MacSystemKeyboard();
-			gKeyboard->setKeyConfig(self.clientConfig->getKeyConfig());
-			m_renderer->clientResolutionChanged(gDisplay->mClientChar);
-			
-			self.view.window.title = [NSString stringWithUTF8String:title];
-		});
-	} catch (Exception& e) {
-		String reason;
-		e.reason(reason);
+	if (!m_initClient) {
+		m_initClient = YES;
 		
-		NSAlert* alert = [[NSAlert alloc] init];
-		alert.messageText = [NSString stringWithFormat:@"Failed to start virtual machine"];
-		alert.informativeText = [NSString stringWithUTF8String:reason.contentChar()];
-		alert.alertStyle = NSAlertStyleCritical;
-		[alert runModal];
-		[NSApp terminate:nil];
+		try {
+			main::initClient(self.clientConfig, [&] (const char* title) {
+				// initUI
+				auto display = new MetalSystemDisplay(title, self.clientConfig->getDisplayConfig(), self.clientConfig->getRedrawInterval(), m_renderer);
+				gDisplay = display;
+				gMouse = new MacSystemMouse();
+				gKeyboard = new MacSystemKeyboard();
+				gKeyboard->setKeyConfig(self.clientConfig->getKeyConfig());
+				m_renderer->clientResolutionChanged(gDisplay->mClientChar);
+				
+				[self initMouseGrabDisplay:display];
+				
+				self.view.window.title = [NSString stringWithUTF8String:title];
+			});
+		} catch (Exception& e) {
+			String reason;
+			e.reason(reason);
+			
+			NSAlert* alert = [[NSAlert alloc] init];
+			alert.messageText = [NSString stringWithFormat:@"Failed to start virtual machine"];
+			alert.informativeText = [NSString stringWithUTF8String:reason.contentChar()];
+			alert.alertStyle = NSAlertStyleCritical;
+			[alert runModal];
+			[NSApp terminate:nil];
+		}
 	}
 	
 	m_renderer->drawableSizeWillChange(self.view.bounds.size);
@@ -138,8 +158,12 @@ namespace
 	
 	[self trackMouseMove:YES];
 	
-	main::startCPU(self.clientConfig);
-	m_cpuRunning = YES;
+	if (!m_startCPU) {
+		m_startCPU = YES;
+		
+		main::startCPU(self.clientConfig);
+		m_cpuRunning = YES;
+	}
 	
 	// this was your last chance to visit the config..
 	self.clientConfig = nil;
@@ -158,6 +182,94 @@ namespace
 														userInfo:nil];
 		[self.view addTrackingArea:self.trackingArea];
 	}
+}
+
+- (void)initMouseGrabDisplay:(MetalSystemDisplay*)display {
+	
+	// Title bar accessory to display mouse ungrab
+	if (self.titleRightView) {
+		NSTitlebarAccessoryViewController* accessory = [[NSTitlebarAccessoryViewController alloc] init];
+		accessory.view = self.titleRightView;
+		accessory.layoutAttribute = NSLayoutAttributeRight;
+		[self.view.window addTitlebarAccessoryViewController:accessory];
+	
+		self.titleRightView.stringValue = [NSString string];
+	}
+		
+	display->setMouseGrabWillChange(^bool (bool grab) {
+		return [self canGrabMouse:grab];
+	});
+	
+	display->setMouseGrabDidChange(^(bool grab) {
+		[self updateMouseGrab:grab inTextField:self.titleRightView];
+	});
+}
+
+- (bool)canGrabMouse:(bool)grab {
+	if (grab) {
+		// Ensure cursor is inside our window
+		const auto mousePos = [NSEvent mouseLocation];
+
+		if ([NSWindow windowNumberAtPoint:mousePos belowWindowWithWindowNumber:0] != self.view.window.windowNumber) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+- (void)updateMouseGrab:(bool)grab inTextField:(NSTextField*)textField {
+	// Hide/unhide the cursor
+	if (grab) {
+		if (!m_cursorHide) {
+			m_cursorHide = true;
+			[NSCursor hide];
+		}
+	} else {
+		if (m_cursorHide) {
+			m_cursorHide = false;
+			[NSCursor unhide];
+		}
+	}
+
+	CGAssociateMouseAndMouseCursorPosition(!grab);
+	
+	// Update mouse release display
+	if (grab) {
+		KeyBinding key = gKeyboard->getKeyConfig().key_toggle_mouse_grab;
+		
+		NSMutableArray<NSString*>* keyNames = [NSMutableArray arrayWithCapacity:5];
+		if (key.modifiers & KEYCODE_MASK_CTRL) {
+			[keyNames addObject:keyGlyphFromQKeyCode(Q_KEY_CODE_CTRL)];
+		}
+		if (key.modifiers & KEYCODE_MASK_ALT) {
+			[keyNames addObject:keyGlyphFromQKeyCode(Q_KEY_CODE_ALT)];
+		}
+		if (key.modifiers & KEYCODE_MASK_SHIFT) {
+			[keyNames addObject:keyGlyphFromQKeyCode(Q_KEY_CODE_SHIFT)];
+		}
+		if (key.modifiers & KEYCODE_MASK_META) {
+			[keyNames addObject:keyGlyphFromQKeyCode(Q_KEY_CODE_META_L)];
+		}
+		
+		if (NSString* glyph = keyGlyphFromQKeyCode(key.qkeycode)) {
+			[keyNames addObject:glyph];
+		} else {
+			// Remove modifier to look up the key name
+			key.modifiers = 0;
+			String str;
+			SystemKeyboard::convertKeyBindingToString(str, key);
+			
+			[keyNames addObject:[[NSString stringWithUTF8String:str.contentChar()] uppercaseString]];
+		}
+			
+		textField.stringValue = [NSString stringWithFormat:@"%@ Disables Mouse", [keyNames componentsJoinedByString:@""]];
+	} else {
+		textField.stringValue = [NSString string];
+		
+	}
+	
+	[textField sizeToFit];
 }
 
 - (std::shared_ptr<class RenderMetal>)renderer {
@@ -264,6 +376,16 @@ namespace
 	}
 	
 	self.modifierFlags = curr;
+}
+
+#pragma mark - Notifications
+
+- (void)windowDidResignKey:(NSNotification*)notification {
+	if (notification.object == self.view.window) {
+		if (gDisplay && gDisplay->isMouseGrabbed()) {
+			gDisplay->setMouseGrab(false);
+		}
+	}
 }
 
 #pragma mark - MTKViewDelegate

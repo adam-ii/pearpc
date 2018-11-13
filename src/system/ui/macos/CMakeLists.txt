@@ -3,9 +3,11 @@ set(target system_ui)
 set(all_srcs
     main.m
     gui.cc
-    syskeyboard.cc
+    syskeyboard.mm
     sysmacos.h
     sysmacos.mm
+    keyglyphs.h
+    keyglyphs.mm
     rendermetal.h
     rendermetal.mm
     shader_types.h

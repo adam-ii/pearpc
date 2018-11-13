@@ -57,7 +57,21 @@ namespace pearpc {
 		m_renderer->clientResolutionChanged(mClientChar);
 		return true;
 	}
-
+	
+	void MetalSystemDisplay::setMouseGrab(bool mouseGrab)
+	{
+		if (m_mouseGrabWillChange) {
+			if (!m_mouseGrabWillChange(mouseGrab)) {
+				return;
+			}
+		}
+		
+		SystemDisplay::setMouseGrab(mouseGrab);
+		
+		if (m_mouseGrabDidChange) {
+			m_mouseGrabDidChange(mouseGrab);
+		}
+	}
 	
 	int MacSystemKeyboard::getKeybLEDs()
 	{

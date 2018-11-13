@@ -1,6 +1,6 @@
 /*
  *	PearPC
- *	PearPCViewController.h
+ *	keyglyphs.h
  *
  *	Copyright (C) 2018 Adam Iarossi
  *
@@ -18,16 +18,13 @@
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import <Cocoa/Cocoa.h>
-#import <memory>
-#import "rendermetal.h"
+#include "system/qkeycode.h"
+#include <Foundation/Foundation.h>
 
-@interface PearPCViewController : NSViewController
+namespace pearpc {
 
-@property (assign) IBOutlet NSTextField *titleRightView;
-@property (nonatomic, assign) std::shared_ptr<class pearpc::ClientConfig> clientConfig;
-
-/// Shut down the client after optionally stopping the CPU
-- (void)shutdown:(BOOL)stopCPU;
-
-@end
+	/// Maps a QKeyCode to a Mac OSX keyboard glyph, or nil
+	/// if no specific glyph is defined for the key
+	NSString* keyGlyphFromQKeyCode(QKeyCode k);
+	
+}

@@ -42,9 +42,18 @@ namespace pearpc {
 		virtual void convertCharacteristicsToHost(DisplayCharacteristics &aHostChar, const DisplayCharacteristics &aClientChar);
 		virtual bool changeResolution(const DisplayCharacteristics &aCharacteristics);
 		virtual void getHostCharacteristics(Container &modes) {}
+		virtual void setMouseGrab(bool mouseGrab);
 		
+		/// Register a block to be called when mouse grab is about to change, return false to prevent the change
+		void setMouseGrabWillChange(bool (^block)(bool)) { m_mouseGrabWillChange = block; }
+		
+		/// Register a block to be called when mouse grab changes
+		void setMouseGrabDidChange(void (^block)(bool)) { m_mouseGrabDidChange = block; }
+
 	private:
 		std::shared_ptr<RenderMetal> m_renderer;
+		bool (^m_mouseGrabWillChange)(bool);
+		void (^m_mouseGrabDidChange)(bool);
 	};
 	
 	class MacSystemKeyboard: public SystemKeyboard {
