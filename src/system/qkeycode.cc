@@ -30,7 +30,7 @@
 namespace qemu {
 
 	// Generated from QEMU qapi/ui.json using PearPC tools/qkeycode.py
-	struct QKeyCodeNames { const char *qemu; const char *pearpc; } qkeycode_names[Q_KEY_CODE__MAX] = {
+	struct QKeyCodeNames { const char *qemu; const char *pearpc; } kQKeyCodeNames[Q_KEY_CODE__MAX] = {
 		{ "unmapped"        , NULL           }, // Q_KEY_CODE_UNMAPPED
 		{ "shift"           , NULL           }, // Q_KEY_CODE_SHIFT
 		{ "shift_r"         , NULL           }, // Q_KEY_CODE_SHIFT_R
@@ -181,29 +181,29 @@ namespace qemu {
 		{ "ac_bookmarks"    , NULL           }, // Q_KEY_CODE_AC_BOOKMARKS
 	};
 	
-	const size_t qkeycode_names_len = sizeof(qkeycode_names) / sizeof(qkeycode_names[0]);
+	const size_t kQKeyCodeNamesLen = sizeof(kQKeyCodeNames) / sizeof(kQKeyCodeNames[0]);
 
 	QKeyCode stringToQKeyCode(const char *s, bool pearpcNames) {
-		for (size_t i = 0; i < qkeycode_names_len; ++i) {
-			if (strcasecmp(s, qkeycode_names[i].qemu) == 0) {
-				return static_cast<QKeyCode>(i);
-			}
-			
+		for (size_t i = 0; i < kQKeyCodeNamesLen; ++i) {
 			if (pearpcNames) {
-				if (qkeycode_names[i].pearpc && strcasecmp(s, qkeycode_names[i].pearpc) == 0) {
+				if (kQKeyCodeNames[i].pearpc && strcasecmp(s, kQKeyCodeNames[i].pearpc) == 0) {
 					return static_cast<QKeyCode>(i);
 				}
+			}
+			
+			if (strcasecmp(s, kQKeyCodeNames[i].qemu) == 0) {
+				return static_cast<QKeyCode>(i);
 			}
 		}
 		return Q_KEY_CODE_UNMAPPED;
 	}
 	
 	const char *stringFromQKeyCode(QKeyCode k, bool pearpcNames) {
-		if (k >= 0 && k < qkeycode_names_len) {
-			if (pearpcNames && qkeycode_names[k].pearpc) {
-				return qkeycode_names[k].pearpc;
+		if (k >= 0 && k < kQKeyCodeNamesLen) {
+			if (pearpcNames && kQKeyCodeNames[k].pearpc) {
+				return kQKeyCodeNames[k].pearpc;
 			}
-			return qkeycode_names[k].qemu;
+			return kQKeyCodeNames[k].qemu;
 		}
 		return NULL;
 	}

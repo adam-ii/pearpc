@@ -10,7 +10,6 @@ set(all_srcs
     sysmouse.cc
     syssdl.cc
     syssdl.h
-    sdl-to-qcode.c
 )
 
 add_library(${target} ${all_srcs})
