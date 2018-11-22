@@ -52,13 +52,20 @@ source_group("shim"
         ${shim_hdrs}
 )
 
+include(CheckTypeSize)
+check_type_size(__int128_t SIZEOF_INT128)
+
+include(TestBigEndian)
+test_big_endian(BIG_ENDIAN)
+
 add_library(${target} ${qemu_srcs} ${shim_srcs} ${shim_hdrs})
 
 target_compile_definitions(${target}
     PUBLIC
         PEARPC_SHIM
         $<$<STREQUAL:${OSAPI_DIR},posix>:CONFIG_POSIX>
-        CONFIG_INT128
+        $<$<BOOL:${HAVE_SIZEOF_INT128}>:CONFIG_INT128>
+        $<$<BOOL:${BIG_ENDIAN}>:HOST_WORDS_BIGENDIAN>
 )
 
 target_compile_options(${target}

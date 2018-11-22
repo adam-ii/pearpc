@@ -44,7 +44,29 @@ inline void qemu_get_timedate(struct tm *tm, int offset)
 // From include/qemu/host-utils.h
 inline uint64_t muldiv64(uint64_t a, uint32_t b, uint32_t c)
 {
+	#ifdef CONFIG_INT128
 	return (__int128_t)a * b / c;
+	#else
+	union {
+		uint64_t ll;
+		struct {
+			#ifdef HOST_WORDS_BIGENDIAN
+			uint32_t high, low;
+			#else
+			uint32_t low, high;
+			#endif
+		} l;
+	} u, res;
+	uint64_t rl, rh;
+	
+	u.ll = a;
+	rl = (uint64_t)u.l.low * (uint64_t)b;
+	rh = (uint64_t)u.l.high * (uint64_t)b;
+	rh += (rl >> 32);
+	res.l.high = rh / c;
+	res.l.low = (((rh % c) << 32) + (rl & 0xffffffff)) / c;
+	return res.ll;
+	#endif
 }
 
 #define NANOSECONDS_PER_SECOND 1000000000LL
